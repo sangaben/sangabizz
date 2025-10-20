@@ -3,6 +3,6 @@ gunicorn==23.0.0
 whitenoise==6.9.0
 dj-database-url==3.0.1
 django-jazzmin==3.0.1
-django-unfold==3.2.0  # if you use unfold
+django-unfold==0.68.0# if you use unfold
 requests==2.25.1
 pillow==11.2.1         # for image fields in Django
