@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="success-page spotify-theme">
+    <div class="container">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1>Welcome to Premium! 🎉</h1>
+            <p class="success-message">Your {{ plan_name }} subscription is now active</p>
+            
+            <div class="success-details">
+                <div class="detail-card">
+                    <i class="fas fa-crown"></i>
+                    <h3>Plan Activated</h3>
+                    <p>{{ plan_name }} Features Unlocked</p>
+                </div>
+                
+                <div class="detail-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Free Trial</h3>
+                    <p>30 days of premium access</p>
+                </div>
+                
+                <div class="detail-card">
+                    <i class="fas fa-bell"></i>
+                    <h3>Reminder</h3>
+                    <p>We'll notify you before trial ends</p>
+                </div>
+            </div>
+            
+            <div class="whats-next">
+                <h2>What's Next?</h2>
+                <div class="features-grid">
+                    <div class="feature">
+                        <i class="fas fa-download"></i>
+                        <h4>Download Music</h4>
+                        <p>Start downloading your favorite songs for offline listening</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-volume-up"></i>
+                        <h4>High Quality Audio</h4>
+                        <p>Experience crystal clear sound in your settings</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-infinity"></i>
+                        <h4>Unlimited Skips</h4>
+                        <p>Skip as many songs as you want, anytime</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'discover' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-music"></i>
+                    Start Listening
+                </a>
+                <a href="{% url 'library' %}" class="btn btn-outline">
+                    <i class="fas fa-download"></i>
+                    Download Songs
+                </a>
+            </div>
+            
+            <div class="support-note">
+                <p>Need help? <a href="{% url 'help_center' %}">Visit our help center</a> or contact support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.success-page {
+    background: var(--spotify-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.success-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.success-icon {
+    font-size: 5rem;
+    color: var(--spotify-green);
+    margin-bottom: 2rem;
+}
+
+.success-content h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.success-message {
+    font-size: 1.25rem;
+    color: var(--spotify-text-secondary);
+    margin-bottom: 3rem;
+}
+
+.success-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.detail-card {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+}
+
+.detail-card i {
+    font-size: 2.5rem;
+    color: var(--spotify-green);
+    margin-bottom: 1rem;
+}
+
+.detail-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--spotify-text-primary);
+}
+
+.detail-card p {
+    color: var(--spotify-text-secondary);
+}
+
+.whats-next {
+    margin-bottom: 3rem;
+}
+
+.whats-next h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--spotify-text-primary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.feature {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+}
+
+.feature i {
+    font-size: 2rem;
+    color: var(--spotify-green);
+    margin-bottom: 1rem;
+}
+
+.feature h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.feature p {
+    color: var(--spotify-text-secondary);
+    line-height: 1.6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.support-note {
+    color: var(--spotify-text-secondary);
+}
+
+.support-note a {
+    color: var(--spotify-green);
+    text-decoration: none;
+}
+
+.support-note a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .success-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+</style>
+{% endblock %}

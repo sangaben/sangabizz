@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}My Library - Sangabiz{% endblock %}
+
+{% block content %}
+<section class="container">
+    <h2 class="section-title">
+        <i class="fas fa-heart"></i>
+        Liked Songs
+    </h2>
+    
+    {% if liked_songs %}
+    <div class="featured-grid">
+        {% for song in liked_songs %}
+        <div class="song-card" data-song-id="{{ song.id }}">
+            <div class="card-image" style="background-image: url('{% if song.cover_image %}{{ song.cover_image.url }}{% else %}/static/default-cover.jpg{% endif %}')"></div>
+            <div class="card-content">
+                <h3>{{ song.title }}</h3>
+                <p>{{ song.artist.name }}</p>
+                <div class="card-actions">
+                    <button class="play-btn" onclick="playSong({{ song.id }})">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="download-btn" onclick="downloadSong({{ song.id }})">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You haven't liked any songs yet.</p>
+    {% endif %}
+    
+    <h2 class="section-title" style="margin-top: 50px;">
+        <i class="fas fa-list"></i>
+        My Playlists
+    </h2>
+    
+    {% if playlists %}
+    <div class="featured-grid">
+        {% for playlist in playlists %}
+        <div class="song-card">
+            <div class="card-image" style="background-image: url('/static/playlist-cover.jpg');"></div>
+            <div class="card-content">
+                <h3>{{ playlist.name }}</h3>
+                <p>{{ playlist.songs.count }} songs</p>
+                <div class="card-actions">
+                    <button class="play-btn" onclick="playPlaylist({{ playlist.id }})">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You haven't created any playlists yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function playPlaylist(playlistId) {
+    alert('Playing playlist ' + playlistId);
+    // In a real app, you would fetch playlist songs and play them
+}
+</script>
+{% endblock %}

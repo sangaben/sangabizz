@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Logged Out - Sangabiz{% endblock %}
+
+{% block content %}
+<section class="logout-section">
+    <div class="logout-container">
+        <div class="logout-card">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            
+            <h1>You've Been Logged Out</h1>
+            
+            <p>Thank you for using Sangabiz. Your music journey continues whenever you return.</p>
+            
+            <div class="logout-actions">
+                <a href="{% url 'login' %}" class="primary-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In Again
+                </a>
+                <a href="{% url 'home' %}" class="secondary-btn">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
+            
+            <div class="logout-features">
+                <h3>What you can do when signed in:</h3>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Save favorite songs</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-list"></i>
+                        <span>Create playlists</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-download"></i>
+                        <span>Download music</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-history"></i>
+                        <span>Track listening history</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Logout Section Styles */
+.logout-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, 
+                rgba(108, 92, 231, 0.1), 
+                rgba(253, 121, 168, 0.1));
+}
+
+.logout-container {
+    max-width: 500px;
+    width: 100%;
+}
+
+.logout-card {
+    background: var(--card-bg);
+    padding: 50px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.logout-icon {
+    font-size: 4rem;
+    color: var(--primary);
+    margin-bottom: 30px;
+}
+
+.logout-card h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logout-card p {
+    color: var(--gray);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+/* Logout Actions */
+.logout-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.logout-actions .primary-btn,
+.logout-actions .secondary-btn {
+    padding: 12px 25px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Features Grid */
+.logout-features h3 {
+    color: var(--light);
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    background: rgba(108, 92, 231, 0.1);
+}
+
+.feature-item i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.feature-item span {
+    color: var(--light);
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .logout-card {
+        padding: 30px 25px;
+    }
+    
+    .logout-icon {
+        font-size: 3rem;
+    }
+    
+    .logout-card h1 {
+        font-size: 2rem;
+    }
+    
+    .logout-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .logout-actions .primary-btn,
+    .logout-actions .secondary-btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .logout-section {
+        padding: 20px 15px;
+    }
+    
+    .logout-card {
+        padding: 25px 20px;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+    }
+}
+</style>
+{% endblock %}

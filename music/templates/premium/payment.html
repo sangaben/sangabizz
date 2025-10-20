@@ -1,0 +1,630 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="payment-page spotify-theme">
+    <div class="container">
+        <div class="payment-container">
+            <!-- Header -->
+            <div class="payment-header">
+                <a href="{% url 'premium_pricing' %}" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Plans
+                </a>
+                <h1>Complete Your Purchase</h1>
+                <p>You're one step away from unlocking premium features</p>
+            </div>
+
+            <div class="payment-content">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    <div class="plan-details">
+                        <div class="plan-info">
+                            <h3>{{ plan.name }} Plan</h3>
+                            <p>30-day free trial, then ${{ plan.price }}/month</p>
+                        </div>
+                        <div class="plan-price">
+                            ${{ plan.price }}
+                        </div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <h4>What you'll get:</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Ad-free music listening</li>
+                            <li><i class="fas fa-check"></i> Offline downloads</li>
+                            <li><i class="fas fa-check"></i> High quality audio</li>
+                            <li><i class="fas fa-check"></i> Unlimited skips</li>
+                            <li><i class="fas fa-check"></i> Multi-device support</li>
+                        </ul>
+                    </div>
+
+                    <div class="total-section">
+                        <div class="total-line">
+                            <span>Today's charge</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="total-line main">
+                            <span>After trial ends</span>
+                            <span>${{ plan.price }}/month</span>
+                        </div>
+                        <div class="cancel-note">
+                            <i class="fas fa-info-circle"></i>
+                            Cancel anytime during your trial - no charges
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="payment-form">
+                    <h2>Payment Method</h2>
+                    
+                    <div class="payment-options">
+                        <div class="payment-option active" data-method="mobile_money">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Mobile Money</span>
+                        </div>
+                        <div class="payment-option" data-method="card">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Credit/Debit Card</span>
+                        </div>
+                        <div class="payment-option" data-method="bank">
+                            <i class="fas fa-university"></i>
+                            <span>Bank Transfer</span>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Money Payment Section -->
+                    <form id="paymentForm" method="POST" action="{% url 'process_payment' plan_type %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="payment_method" id="payment_method" value="mobile_money">
+                        
+                        <div class="payment-method active" id="mobile_money-payment">
+                            <div class="form-group">
+                                <label for="network">Mobile Network</label>
+                                <select id="network" name="network" class="network-select" required>
+                                    <option value="">Select your network</option>
+                                    <option value="mtn">MTN Mobile Money</option>
+                                    <option value="airtel">Airtel Money</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone_number">Phone Number</label>
+                                <div class="input-with-prefix">
+                                    <span class="prefix">+256</span>
+                                    <input type="tel" id="phone_number" name="phone_number" 
+                                           placeholder="7XXXXXXXX" pattern="[0-9]{9}" 
+                                           title="Enter your 9-digit phone number (without country code)" required>
+                                </div>
+                                <small class="input-help">Enter your 9-digit phone number without the country code</small>
+                            </div>
+
+                            <div class="network-instructions">
+                                <div id="mtn-instructions" class="instructions" style="display: none;">
+                                    <h4><i class="fas fa-info-circle"></i> MTN Mobile Money Instructions</h4>
+                                    <ol>
+                                        <li>Enter your MTN phone number</li>
+                                        <li>Click "Start Free Trial"</li>
+                                        <li>Check your phone for MTN Mobile Money prompt</li>
+                                        <li>Enter your PIN to confirm payment</li>
+                                        <li>Wait for confirmation message</li>
+                                    </ol>
+                                </div>
+                                
+                                <div id="airtel-instructions" class="instructions" style="display: none;">
+                                    <h4><i class="fas fa-info-circle"></i> Airtel Money Instructions</h4>
+                                    <ol>
+                                        <li>Enter your Airtel phone number</li>
+                                        <li>Click "Start Free Trial"</li>
+                                        <li>Check your phone for Airtel Money prompt</li>
+                                        <li>Enter your PIN to confirm payment</li>
+                                        <li>Wait for confirmation message</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>Your payment is secure and encrypted</span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg full-width">
+                                <i class="fas fa-mobile-alt"></i>
+                                Start Your Free Trial
+                            </button>
+                        </div>
+
+                        <!-- Card Payment Section (Hidden) -->
+                        <div class="payment-method" id="card-payment" style="display: none;">
+                            <div class="method-info">
+                                <p>Card payments are temporarily unavailable. Please use Mobile Money for instant activation.</p>
+                                <a href="#mobile_money-payment" class="btn btn-outline switch-method">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    Use Mobile Money Instead
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer Section (Hidden) -->
+                        <div class="payment-method" id="bank-payment" style="display: none;">
+                            <div class="method-info">
+                                <p>Bank transfer payments are temporarily unavailable. Please use Mobile Money for instant activation.</p>
+                                <a href="#mobile_money-payment" class="btn btn-outline switch-method">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    Use Mobile Money Instead
+                                </a>
+                            </div>
+                        </div>
+
+                        <p class="terms-note">
+                            By continuing, you agree to our <a href="#">Terms of Service</a> and acknowledge our <a href="#">Privacy Policy</a>. Your free trial will automatically convert to a paid subscription after 30 days unless canceled.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-page {
+    background: var(--spotify-dark);
+    min-height: 100vh;
+    padding: 40px 0;
+}
+
+.payment-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--spotify-text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color: var(--spotify-green);
+}
+
+.payment-header h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: var(--spotify-text-primary);
+}
+
+.payment-header p {
+    color: var(--spotify-text-secondary);
+    font-size: 1.125rem;
+}
+
+.payment-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+.order-summary {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+    height: fit-content;
+}
+
+.order-summary h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--spotify-text-primary);
+}
+
+.plan-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--spotify-gray-light);
+}
+
+.plan-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--spotify-text-primary);
+}
+
+.plan-info p {
+    color: var(--spotify-text-secondary);
+    font-size: 0.875rem;
+}
+
+.plan-price {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--spotify-green);
+}
+
+.features-list {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--spotify-gray-light);
+}
+
+.features-list h4 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.features-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.features-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    color: var(--spotify-text-secondary);
+}
+
+.features-list i {
+    color: var(--spotify-green);
+    width: 16px;
+}
+
+.total-section {
+    padding-top: 1.5rem;
+}
+
+.total-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    color: var(--spotify-text-secondary);
+}
+
+.total-line.main {
+    font-weight: 700;
+    color: var(--spotify-text-primary);
+    font-size: 1.125rem;
+    border-top: 1px solid var(--spotify-gray-light);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.cancel-note {
+    background: rgba(29, 185, 84, 0.1);
+    border: 1px solid var(--spotify-green);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--spotify-green);
+    font-size: 0.875rem;
+}
+
+.payment-form {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+}
+
+.payment-form h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--spotify-text-primary);
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.payment-option {
+    background: var(--spotify-dark);
+    border: 2px solid var(--spotify-gray-light);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.payment-option.active {
+    border-color: var(--spotify-green);
+    background: rgba(29, 185, 84, 0.1);
+}
+
+.payment-option i {
+    font-size: 1.5rem;
+    color: var(--spotify-text-secondary);
+}
+
+.payment-option.active i {
+    color: var(--spotify-green);
+}
+
+.payment-option span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--spotify-text-secondary);
+}
+
+.payment-option.active span {
+    color: var(--spotify-text-primary);
+}
+
+.payment-method {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--spotify-text-primary);
+    font-size: 0.875rem;
+}
+
+.network-select, .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--spotify-dark);
+    border: 1px solid var(--spotify-gray-light);
+    border-radius: 8px;
+    color: var(--spotify-text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.network-select:focus, .form-group input:focus {
+    outline: none;
+    border-color: var(--spotify-green);
+    box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+.input-with-prefix {
+    display: flex;
+    align-items: center;
+}
+
+.input-with-prefix .prefix {
+    background: var(--spotify-dark);
+    padding: 12px 16px;
+    border: 1px solid var(--spotify-gray-light);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    color: var(--spotify-text-secondary);
+    font-weight: 600;
+}
+
+.input-with-prefix input {
+    border-radius: 0 8px 8px 0;
+    flex: 1;
+}
+
+.input-help {
+    color: var(--spotify-text-tertiary);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.network-instructions {
+    margin: 2rem 0;
+}
+
+.instructions {
+    background: var(--spotify-dark);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--spotify-gray-light);
+}
+
+.instructions h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    color: var(--spotify-green);
+    font-size: 1rem;
+}
+
+.instructions ol {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: var(--spotify-text-secondary);
+}
+
+.instructions li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.method-info {
+    background: var(--spotify-dark);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--spotify-gray-light);
+    text-align: center;
+    color: var(--spotify-text-secondary);
+}
+
+.switch-method {
+    margin-top: 1rem;
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--spotify-text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--spotify-dark);
+    border-radius: 8px;
+    border: 1px solid var(--spotify-gray-light);
+}
+
+.security-badge i {
+    color: var(--spotify-green);
+}
+
+.terms-note {
+    text-align: center;
+    color: var(--spotify-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-top: 1.5rem;
+}
+
+.terms-note a {
+    color: var(--spotify-green);
+    text-decoration: none;
+}
+
+.terms-note a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .payment-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .back-button {
+        position: relative;
+        margin-bottom: 1rem;
+        justify-content: center;
+    }
+    
+    .payment-header {
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment method selection
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    const paymentMethodInput = document.getElementById('payment_method');
+    
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove active class from all options
+            paymentOptions.forEach(opt => opt.classList.remove('active'));
+            // Add active class to clicked option
+            this.classList.add('active');
+            
+            // Hide all payment methods
+            paymentMethods.forEach(method => method.style.display = 'none');
+            
+            // Show selected payment method
+            const method = this.dataset.method;
+            document.getElementById(`${method}-payment`).style.display = 'block';
+            paymentMethodInput.value = method;
+        });
+    });
+
+    // Network selection handler
+    const networkSelect = document.getElementById('network');
+    const mtnInstructions = document.getElementById('mtn-instructions');
+    const airtelInstructions = document.getElementById('airtel-instructions');
+    
+    networkSelect.addEventListener('change', function() {
+        // Hide all instructions
+        mtnInstructions.style.display = 'none';
+        airtelInstructions.style.display = 'none';
+        
+        // Show selected network instructions
+        if (this.value === 'mtn') {
+            mtnInstructions.style.display = 'block';
+        } else if (this.value === 'airtel') {
+            airtelInstructions.style.display = 'block';
+        }
+    });
+
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone_number');
+    phoneInput.addEventListener('input', function(e) {
+        // Remove any non-digit characters
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // Limit to 9 digits
+        if (value.length > 9) {
+            value = value.substring(0, 9);
+        }
+        
+        e.target.value = value;
+    });
+
+    // Form validation
+    const paymentForm = document.getElementById('paymentForm');
+    paymentForm.addEventListener('submit', function(e) {
+        const network = document.getElementById('network').value;
+        const phoneNumber = document.getElementById('phone_number').value;
+        
+        if (!network) {
+            e.preventDefault();
+            alert('Please select your mobile network.');
+            return;
+        }
+        
+        if (phoneNumber.length !== 9) {
+            e.preventDefault();
+            alert('Please enter a valid 9-digit phone number.');
+            return;
+        }
+        
+        // Show loading state
+        const submitButton = paymentForm.querySelector('button[type="submit"]');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        submitButton.disabled = true;
+    });
+});
+</script>
+{% endblock %}

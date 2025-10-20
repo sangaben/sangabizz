@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}My Playlists - Sangabiz{% endblock %}
+
+{% block content %}
+<section class="container">
+    <h2 class="section-title">
+        <i class="fas fa-list"></i>
+        My Playlists
+    </h2>
+    
+    <!-- Create Playlist Form -->
+    <div style="background: var(--card-bg); padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+        <h3>Create New Playlist</h3>
+        <form method="POST" style="display: flex; gap: 10px; margin-top: 15px;">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Playlist name" required style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
+            <button type="submit" class="primary-btn" style="padding: 10px 20px;">Create</button>
+        </form>
+    </div>
+    
+    {% if playlists %}
+    <div class="featured-grid">
+        {% for playlist in playlists %}
+        <div class="song-card">
+            <div class="card-image" style="background-image: url('/static/playlist-cover.jpg');"></div>
+            <div class="card-content">
+                <h3>{{ playlist.name }}</h3>
+                <p>{{ playlist.songs.count }} songs</p>
+                <p>Created: {{ playlist.created_at|date:"M d, Y" }}</p>
+                <div class="card-actions">
+                    <button class="play-btn" onclick="playPlaylist({{ playlist.id }})">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="download-btn" onclick="editPlaylist({{ playlist.id }})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>You haven't created any playlists yet. Create your first playlist above!</p>
+    {% endif %}
+</section>
+{% endblock %}

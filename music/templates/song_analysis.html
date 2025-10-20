@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Analytics - {{ song.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+        <div class="card-image" style="width: 100px; height: 100px; background-image: url('{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}')"></div>
+        <div>
+            <h1>{{ song.title }}</h1>
+            <p>{{ song.artist.name }} • {{ song.genre.name }}</p>
+        </div>
+    </div>
+
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center;">
+            <h3 style="color: var(--primary); font-size: 24px;">{{ total_plays }}</h3>
+            <p>Total Plays</p>
+        </div>
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center;">
+            <h3 style="color: var(--secondary); font-size: 24px;">{{ total_downloads }}</h3>
+            <p>Total Downloads</p>
+        </div>
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center;">
+            <h3 style="color: var(--primary); font-size: 24px;">{{ recent_plays.count }}</h3>
+            <p>Plays (Last 30 days)</p>
+        </div>
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center;">
+            <h3 style="color: var(--secondary); font-size: 24px;">{{ recent_downloads.count }}</h3>
+            <p>Downloads (Last 30 days)</p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div>
+            <h3>Recent Plays</h3>
+            <div style="background: var(--card-bg); border-radius: 10px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                {% for play in recent_plays %}
+                <div style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: between;">
+                        <span>{% if play.user %}{{ play.user.username }}{% else %}Anonymous{% endif %}</span>
+                        <span style="color: var(--gray); font-size: 12px;">{{ play.played_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <div style="color: var(--gray); font-size: 12px;">{{ play.ip_address }}</div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--gray);">No recent plays</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div>
+            <h3>Recent Downloads</h3>
+            <div style="background: var(--card-bg); border-radius: 10px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                {% for download in recent_downloads %}
+                <div style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: between;">
+                        <span>{% if download.user %}{{ download.user.username }}{% else %}Anonymous{% endif %}</span>
+                        <span style="color: var(--gray); font-size: 12px;">{{ download.downloaded_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <div style="color: var(--gray); font-size: 12px;">{{ download.ip_address }}</div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--gray);">No recent downloads</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

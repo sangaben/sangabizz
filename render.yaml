@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sangabiz
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn sangabiz.wsgi
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: sangabiz.settings
+      - key: SECRET_KEY
+        value: your-secret-key
+      - key: ALLOWED_HOSTS
+        value: .onrender.com

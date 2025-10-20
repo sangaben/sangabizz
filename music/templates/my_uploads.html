@@ -1,0 +1,609 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Uploads - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="uploads-container">
+    <!-- Header Section -->
+    <div class="uploads-header">
+        <div class="header-background"></div>
+        <div class="header-content">
+            <div class="header-info">
+                <div class="playlist-cover">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="playlist-details">
+                    <span class="playlist-type">PLAYLIST</span>
+                    <h1 class="playlist-title">My Uploads</h1>
+                    <p class="playlist-stats">
+                        <span>{{ songs|length }} songs</span>
+                        <span>•</span>
+                        <span>{{ total_plays }} total plays</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="uploads-controls">
+        <div class="controls-left">
+            <button class="play-all-btn" onclick="playAllSongs()">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="secondary-btn">
+                <i class="far fa-heart"></i>
+            </button>
+            <button class="secondary-btn">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        </div>
+        <div class="controls-right">
+            <a href="{% url 'upload_music' %}" class="upload-new-btn">
+                <i class="fas fa-plus"></i>
+                Upload New
+            </a>
+        </div>
+    </div>
+
+    <!-- Songs List -->
+    <div class="uploads-list-container">
+        {% if songs %}
+        <div class="list-header">
+            <div class="header-row">
+                <div class="col-index">#</div>
+                <div class="col-title">Title</div>
+                <div class="col-album">Genre</div>
+                <div class="col-date">Date Added</div>
+                <div class="col-status">Status</div>
+                <div class="col-stats">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="col-duration">
+                    <i class="far fa-clock"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="songs-list">
+            {% for song in songs %}
+            <div class="song-row" data-song-id="{{ song.id }}" onclick="playSong({{ song.id }})">
+                <div class="col-index">
+                    <span class="track-number">{{ forloop.counter }}</span>
+                    <button class="play-indicator">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <div class="col-title">
+                    <div class="song-info">
+                        <img src="{% if song.cover_image %}{{ song.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}" 
+                             alt="{{ song.title }}" class="song-cover">
+                        <div class="song-details">
+                            <div class="song-name">{{ song.title }}</div>
+                            <div class="song-artist">{{ song.artist.name|default:"Unknown Artist" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-album">
+                    <span class="genre-tag">{{ song.genre.name|default:"No Genre" }}</span>
+                </div>
+                <div class="col-date">
+                    {{ song.upload_date|date:"M d, Y" }}
+                </div>
+                <div class="col-status">
+                    <span class="status-badge {% if song.is_approved %}approved{% else %}pending{% endif %}">
+                        {% if song.is_approved %}
+                        <i class="fas fa-check"></i> Approved
+                        {% else %}
+                        <i class="fas fa-clock"></i> Pending
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="col-stats">
+                    <div class="song-stats">
+                        <span class="plays">{{ song.plays }}</span>
+                        <span class="downloads">{{ song.downloads }}</span>
+                    </div>
+                </div>
+                <div class="col-duration">
+                    {% if song.duration %}
+                        {{ song.duration|divisibleby:60|yesno:"%d:%02d,%d:%02d"|safe }}
+                    {% else %}
+                    0:00
+                    {% endif %}
+                </div>
+                <div class="col-actions">
+                    <button class="action-btn" onclick="event.stopPropagation(); editSong({{ song.id }})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" onclick="event.stopPropagation(); shareSong({{ song.id }})">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-uploads">
+            <div class="empty-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h2>No uploads yet</h2>
+                <p>Start sharing your music with the world</p>
+                <a href="{% url 'upload_music' %}" class="upload-cta-btn">
+                    Upload Your First Song
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.uploads-container {
+    background: linear-gradient(180deg, #1f1f1f 0%, #121212 100%);
+    min-height: 100vh;
+    color: white;
+}
+
+/* Header Section */
+.uploads-header {
+    position: relative;
+    padding: 60px 32px 32px;
+    background: linear-gradient(transparent 0%, rgba(0,0,0,0.5) 100%);
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #5038a4 0%, #2d1b69 100%);
+    z-index: -1;
+}
+
+.header-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+}
+
+.header-info {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    flex: 1;
+}
+
+.playlist-cover {
+    width: 192px;
+    height: 192px;
+    background: linear-gradient(135deg, #5038a4, #2d1b69);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.playlist-details {
+    flex: 1;
+    padding-bottom: 16px;
+}
+
+.playlist-type {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.playlist-title {
+    font-size: 72px;
+    font-weight: 900;
+    margin: 0 0 16px 0;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+.playlist-stats {
+    color: #b3b3b3;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Controls Section */
+.uploads-controls {
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.controls-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.play-all-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1db954;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.play-all-btn:hover {
+    transform: scale(1.06);
+    background: #1ed760;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: none;
+    color: #b3b3b3;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.upload-new-btn {
+    background: transparent;
+    border: 1px solid #b3b3b3;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-new-btn:hover {
+    border-color: white;
+    transform: scale(1.04);
+}
+
+/* List Header */
+.list-header {
+    padding: 0 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 16px;
+}
+
+.header-row {
+    display: grid;
+    grid-template-columns: 40px 4fr 2fr 1fr 1fr 1fr 60px 80px;
+    gap: 16px;
+    padding: 8px 16px;
+    color: #b3b3b3;
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.col-index, .col-stats, .col-duration {
+    text-align: center;
+}
+
+/* Songs List */
+.songs-list {
+    padding: 0 32px;
+}
+
+.song-row {
+    display: grid;
+    grid-template-columns: 40px 4fr 2fr 1fr 1fr 1fr 60px 80px;
+    gap: 16px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.song-row:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.song-row:hover .col-index .track-number {
+    opacity: 0;
+}
+
+.song-row:hover .col-index .play-indicator {
+    opacity: 1;
+}
+
+.col-index {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.track-number {
+    color: #b3b3b3;
+    font-size: 14px;
+    transition: opacity 0.2s ease;
+}
+
+.play-indicator {
+    position: absolute;
+    background: transparent;
+    border: none;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+}
+
+.col-title .song-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.song-cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.song-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.song-name {
+    color: white;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.song-artist {
+    color: #b3b3b3;
+    font-size: 14px;
+}
+
+.col-album .genre-tag {
+    background: rgba(255,255,255,0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #b3b3b3;
+}
+
+.col-date {
+    color: #b3b3b3;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge.approved {
+    background: rgba(29, 185, 84, 0.2);
+    color: #1db954;
+}
+
+.status-badge.pending {
+    background: rgba(255, 255, 255, 0.1);
+    color: #b3b3b3;
+}
+
+.col-stats .song-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    color: #b3b3b3;
+}
+
+.col-duration {
+    color: #b3b3b3;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.song-row:hover .col-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    color: #b3b3b3;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Empty State */
+.empty-uploads {
+    padding: 80px 32px;
+    text-align: center;
+}
+
+.empty-content i {
+    font-size: 64px;
+    color: #b3b3b3;
+    margin-bottom: 24px;
+}
+
+.empty-content h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: white;
+}
+
+.empty-content p {
+    color: #b3b3b3;
+    margin: 0 0 24px 0;
+}
+
+.upload-cta-btn {
+    background: #1db954;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.upload-cta-btn:hover {
+    background: #1ed760;
+    transform: scale(1.04);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-row, .song-row {
+        grid-template-columns: 40px 1fr 80px;
+        gap: 12px;
+    }
+    
+    .col-album, .col-date, .col-status, .col-stats, .col-actions {
+        display: none;
+    }
+    
+    .playlist-title {
+        font-size: 48px;
+    }
+    
+    .playlist-cover {
+        width: 120px;
+        height: 120px;
+        font-size: 48px;
+    }
+    
+    .uploads-header {
+        padding: 40px 20px 20px;
+    }
+    
+    .uploads-controls {
+        padding: 20px;
+    }
+    
+    .songs-list, .list-header {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .header-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .playlist-details {
+        padding-bottom: 0;
+    }
+    
+    .playlist-title {
+        font-size: 36px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function playSong(songId) {
+    console.log('Playing song:', songId);
+    // Implement play functionality
+}
+
+function playAllSongs() {
+    console.log('Playing all songs');
+    // Implement play all functionality
+}
+
+function editSong(songId) {
+    console.log('Editing song:', songId);
+    // Implement edit functionality
+}
+
+function shareSong(songId) {
+    console.log('Sharing song:', songId);
+    // Implement share functionality
+}
+
+// Add hover effects for song rows
+document.addEventListener('DOMContentLoaded', function() {
+    const songRows = document.querySelectorAll('.song-row');
+    
+    songRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(255,255,255,0.1)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Processing - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="pending-page spotify-theme">
+    <div class="container">
+        <div class="pending-content">
+            <div class="loading-animation">
+                <div class="spinner"></div>
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            
+            <h1>Processing Your Payment</h1>
+            <p class="pending-message" id="status-message">Waiting for Mobile Money confirmation...</p>
+            
+            <div class="instructions">
+                <h3>What to do next:</h3>
+                <ol>
+                    <li>Check your phone for a Mobile Money prompt</li>
+                    <li>Enter your PIN to authorize the payment</li>
+                    <li>Wait for confirmation message</li>
+                    <li>This page will update automatically once confirmed</li>
+                </ol>
+            </div>
+            
+            <div class="transaction-info">
+                <p><strong>Transaction ID:</strong> {{ transaction_id }}</p>
+                <p><strong>Status:</strong> <span id="status-text">Pending</span></p>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="refresh-btn" class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i>
+                    Check Status
+                </button>
+                <a href="{% url 'premium_pricing' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel Payment
+                </a>
+            </div>
+            
+            <div class="support-note">
+                <p>Taking longer than expected? <a href="{% url 'help_center' %}">Contact support</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.pending-page {
+    background: var(--spotify-dark);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.pending-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.loading-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+}
+
+.spinner {
+    width: 120px;
+    height: 120px;
+    border: 4px solid var(--spotify-gray-light);
+    border-top: 4px solid var(--spotify-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-animation i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: var(--spotify-green);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.pending-content h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.pending-message {
+    font-size: 1.125rem;
+    color: var(--spotify-text-secondary);
+    margin-bottom: 3rem;
+}
+
+.instructions {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.instructions h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+    text-align: center;
+}
+
+.instructions ol {
+    color: var(--spotify-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.instructions li {
+    margin-bottom: 0.5rem;
+}
+
+.transaction-info {
+    background: var(--spotify-dark-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--spotify-gray-light);
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.transaction-info p {
+    margin: 0.5rem 0;
+    color: var(--spotify-text-secondary);
+}
+
+.transaction-info strong {
+    color: var(--spotify-text-primary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.support-note {
+    color: var(--spotify-text-secondary);
+}
+
+.support-note a {
+    color: var(--spotify-green);
+    text-decoration: none;
+}
+
+.support-note a:hover {
+    text-decoration: underline;
+}
+
+.status-completed {
+    color: var(--spotify-green) !important;
+    font-weight: 700;
+}
+
+.status-failed {
+    color: #ef4444 !important;
+    font-weight: 700;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusMessage = document.getElementById('status-message');
+    const statusText = document.getElementById('status-text');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const transactionId = '{{ transaction_id }}';
+    
+    let checkCount = 0;
+    const maxChecks = 30; // 5 minutes (10-second intervals)
+    
+    function checkPaymentStatus() {
+        fetch(`/premium/check-payment-status/${transactionId}/`)
+            .then(response => response.json())
+            .then(data => {
+                checkCount++;
+                
+                if (data.status === 'completed') {
+                    // Payment completed
+                    statusMessage.textContent = data.message;
+                    statusMessage.className = 'pending-message status-completed';
+                    statusText.textContent = 'Completed';
+                    statusText.className = 'status-completed';
+                    
+                    // Redirect to success page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '{% url "premium_success" %}';
+                    }, 2000);
+                    
+                } else if (checkCount >= maxChecks) {
+                    // Timeout
+                    statusMessage.textContent = 'Payment timeout. Please try again or contact support.';
+                    statusMessage.className = 'pending-message status-failed';
+                    statusText.textContent = 'Failed';
+                    statusText.className = 'status-failed';
+                    refreshBtn.disabled = true;
+                    
+                } else {
+                    // Still pending
+                    statusMessage.textContent = data.message || 'Waiting for Mobile Money confirmation...';
+                    setTimeout(checkPaymentStatus, 10000); // Check every 10 seconds
+                }
+            })
+            .catch(error => {
+                console.error('Error checking payment status:', error);
+                if (checkCount < maxChecks) {
+                    setTimeout(checkPaymentStatus, 10000);
+                }
+            });
+    }
+    
+    // Start checking status
+    checkPaymentStatus();
+    
+    // Manual refresh
+    refreshBtn.addEventListener('click', function() {
+        checkPaymentStatus();
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+        setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-sync-alt"></i> Check Status';
+        }, 2000);
+    });
+});
+</script>
+{% endblock %}

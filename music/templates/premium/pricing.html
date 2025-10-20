@@ -1,0 +1,1232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upgrade to Premium - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="premium-page spotify-theme">
+    <!-- Hero Section -->
+    <section class="premium-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>LIMITED TIME OFFER</span>
+                </div>
+                <h1 class="hero-title">Elevate Your Music Experience</h1>
+                <p class="hero-subtitle">Join millions of music lovers enjoying ad-free, high-quality audio with exclusive features</p>
+                
+                {% if user_has_premium %}
+                <div class="premium-status">
+                    <div class="status-badge">
+                        <i class="fas fa-crown"></i>
+                        Premium Member
+                    </div>
+                    <p class="status-text">Thank you for being part of our premium community!</p>
+                </div>
+                {% else %}
+                <div class="hero-actions">
+                    <a href="#pricing" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket"></i>
+                        Start 30-Day Free Trial
+                    </a>
+                    <a href="#features" class="btn btn-outline">
+                        <i class="fas fa-play-circle"></i>
+                        Watch Demo
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Premium Users</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">50M+</div>
+                        <div class="stat-label">Songs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-background">
+            <div class="floating-element element-1"></div>
+            <div class="floating-element element-2"></div>
+            <div class="floating-element element-3"></div>
+        </div>
+    </section>
+
+    <!-- Features Showcase -->
+    <section id="features" class="features-showcase">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">WHY CHOOSE PREMIUM</span>
+                <h2>Unlock Unlimited Possibilities</h2>
+                <p>Experience music like never before with our premium features</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>Offline Listening</h3>
+                    <p>Download your favorite songs and playlists for offline enjoyment. Perfect for travel and areas with limited connectivity.</p>
+                    <div class="feature-tag">Most Popular</div>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>High-Fidelity Audio</h3>
+                    <p>Experience studio-quality sound with 320kbps streaming and support for lossless audio formats.</p>
+                    <div class="feature-tag premium-only">Premium+</div>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>Ad-Free Experience</h3>
+                    <p>Enjoy uninterrupted music sessions without any commercial breaks or banner advertisements.</p>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>Unlimited Skips</h3>
+                    <p>Skip as many tracks as you want and discover new music without any restrictions or limitations.</p>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>Early Access</h3>
+                    <p>Be the first to listen to new releases from your favorite artists before anyone else.</p>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="icon-bg"></div>
+                    </div>
+                    <h3>Multi-Device Sync</h3>
+                    <p>Seamlessly switch between your phone, tablet, and computer without losing your place.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section id="pricing" class="pricing-plans">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">PRICING PLANS</span>
+                <h2>Choose Your Perfect Plan</h2>
+                <p>All plans include full access to our 50M+ song library</p>
+            </div>
+            
+            <div class="billing-toggle">
+                <span class="billing-option active">Monthly</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="billing-toggle" class="toggle-input">
+                    <label for="billing-toggle" class="toggle-label"></label>
+                </div>
+                <span class="billing-option">Yearly <span class="save-badge">Save 20%</span></span>
+            </div>
+            
+            <div class="plans-container">
+                {% for plan in plans %}
+                <div class="plan-card {% if plan.popular %}popular{% endif %}" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                    {% if plan.popular %}
+                    <div class="popular-ribbon">
+                        <span>MOST POPULAR</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="plan-header">
+                        <h3>{{ plan.name }}</h3>
+                        <div class="plan-price">
+                            <span class="currency">$</span>
+                            <span class="price">{{ plan.price }}</span>
+                            <span class="period">/{{ plan.period }}</span>
+                        </div>
+                        <p class="plan-description">{{ plan.description }}</p>
+                    </div>
+                    
+                    <div class="plan-features">
+                        {% for feature in plan.features %}
+                        <div class="feature {% if not feature.included %}disabled{% endif %}">
+                            <div class="feature-icon">
+                                <i class="fas {% if feature.included %}fa-check{% else %}fa-times{% endif %}"></i>
+                            </div>
+                            <span>{{ feature.text }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="plan-actions">
+                        {% if user_has_premium and plan.name == 'Free' %}
+                        <button class="btn btn-outline full-width current-plan" disabled>
+                            <i class="fas fa-check"></i>
+                            Current Plan
+                        </button>
+                        {% elif plan.name == 'Free' %}
+                        <button class="btn btn-outline full-width" disabled>
+                            Current Plan
+                        </button>
+                        {% else %}
+                        <a href="{% url 'process_payment' plan.name|lower %}" class="btn {% if plan.popular %}btn-primary{% else %}btn-secondary{% endif %} full-width">
+                            {{ plan.cta_text }}
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if plan.name != 'Free' %}
+                        <p class="plan-note">Start your 30-day free trial</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="pricing-footer">
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>All payments are secure and encrypted</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">TESTIMONIALS</span>
+                <h2>What Our Users Say</h2>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"The audio quality is incredible! I can hear details in my favorite songs that I never noticed before."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{% static 'images/avatar1.jpg' %}" alt="Sarah M.">
+                        </div>
+                        <div class="author-info">
+                            <h4>Sarah M.</h4>
+                            <span>Premium User</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Offline downloads saved me during my flight. The interface is intuitive and the recommendations are spot on!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{% static 'images/avatar2.jpg' %}" alt="James K.">
+                        </div>
+                        <div class="author-info">
+                            <h4>James K.</h4>
+                            <span>Premium+ User</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-content">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Worth every penny! The ad-free experience and unlimited skips make discovering new music so much better."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{% static 'images/avatar3.jpg' %}" alt="Maria L.">
+                        </div>
+                        <div class="author-info">
+                            <h4>Maria L.</h4>
+                            <span>Premium User</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">FAQ</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question">
+                        <h4>Can I cancel my subscription anytime?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, you can cancel your premium subscription at any time. Your premium features will remain active until the end of your current billing period, and you won't be charged again.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question">
+                        <h4>Do you offer student discounts?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! We offer a 50% discount for verified students. Simply contact our support team with a valid student ID or educational email address to get your discount applied.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question">
+                        <h4>Can I use Premium on multiple devices?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Premium allows streaming on up to 3 devices simultaneously, while Premium Plus extends this to 6 devices. Perfect for families or individuals with multiple devices.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question">
+                        <h4>Is there a free trial?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! We offer a full-featured 30-day free trial for new Premium subscribers. No credit card required to start - you can experience all premium features risk-free.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-aos="fade-up">
+                    <div class="faq-question">
+                        <h4>What payment methods do you accept?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and in some regions, mobile payment methods like Apple Pay and Google Pay.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-cta">
+                <p>Still have questions? <a href="{% url 'help_center' %}">Contact our support team</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    {% if not user_has_premium %}
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Music Experience?</h2>
+                <p>Join thousands of satisfied users and start your premium journey today</p>
+                <a href="#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-crown"></i>
+                    Start Free Trial Now
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<!-- Add AOS CSS and JS for animations -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<style>
+:root {
+    --spotify-green: #1DB954;
+    --spotify-green-hover: #1ed760;
+    --spotify-dark: #191414;
+    --spotify-dark-light: #282828;
+    --spotify-dark-lighter: #3e3e3e;
+    --spotify-gray: #b3b3b3;
+    --spotify-gray-light: #535353;
+    --spotify-white: #ffffff;
+    --spotify-text-primary: #ffffff;
+    --spotify-text-secondary: #b3b3b3;
+    --spotify-text-tertiary: #535353;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.spotify-theme {
+    background: var(--spotify-dark);
+    color: var(--spotify-text-primary);
+}
+
+/* Hero Section */
+.premium-hero {
+    background: linear-gradient(135deg, var(--spotify-dark) 0%, #1a1a1a 100%);
+    color: var(--spotify-text-primary);
+    padding: 120px 0 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--spotify-white) 0%, var(--spotify-gray) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--spotify-text-secondary);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.premium-status {
+    background: var(--spotify-dark-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.status-text {
+    color: var(--spotify-text-secondary);
+    margin: 0;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:hover {
+    background: var(--spotify-green-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(29, 185, 84, 0.3);
+}
+
+.btn-secondary {
+    background: var(--spotify-dark-light);
+    color: var(--spotify-text-primary);
+    border: 2px solid var(--spotify-gray-light);
+}
+
+.btn-secondary:hover {
+    background: var(--spotify-dark-lighter);
+    border-color: var(--spotify-gray);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--spotify-text-primary);
+    border: 2px solid var(--spotify-gray-light);
+}
+
+.btn-outline:hover {
+    background: var(--spotify-dark-light);
+    border-color: var(--spotify-gray);
+    transform: translateY(-2px);
+}
+
+.btn-lg {
+    padding: 16px 40px;
+    font-size: 1rem;
+}
+
+.full-width {
+    width: 100%;
+    justify-content: center;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    margin-top: 4rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: var(--spotify-green);
+}
+
+.stat-label {
+    color: var(--spotify-text-secondary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Features Section */
+.features-showcase {
+    padding: 100px 0;
+    background: var(--spotify-dark-light);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-label {
+    display: inline-block;
+    color: var(--spotify-green);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--spotify-text-primary);
+    margin-bottom: 1rem;
+}
+
+.section-header p {
+    font-size: 1.125rem;
+    color: var(--spotify-text-secondary);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--spotify-dark);
+    padding: 2.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--spotify-gray-light);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--spotify-green);
+}
+
+.feature-icon-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--spotify-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--spotify-dark);
+    position: relative;
+    z-index: 2;
+}
+
+.icon-bg {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: -10px;
+    bottom: -10px;
+    background: var(--spotify-green);
+    opacity: 0.2;
+    border-radius: 50%;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.feature-card p {
+    color: var(--spotify-text-secondary);
+    line-height: 1.6;
+}
+
+.feature-tag {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feature-tag.premium-only {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Pricing Section */
+.pricing-plans {
+    padding: 100px 0;
+    background: var(--spotify-dark);
+}
+
+.billing-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.billing-option {
+    font-weight: 700;
+    color: var(--spotify-text-secondary);
+    position: relative;
+}
+
+.billing-option.active {
+    color: var(--spotify-green);
+}
+
+.save-badge {
+    position: absolute;
+    top: -20px;
+    right: -40px;
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 30px;
+    background: var(--spotify-gray-light);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-label::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: var(--spotify-dark);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.toggle-input:checked + .toggle-label {
+    background: var(--spotify-green);
+}
+
+.toggle-input:checked + .toggle-label::after {
+    transform: translateX(30px);
+    background: var(--spotify-dark);
+}
+
+.plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+}
+
+.plan-card {
+    background: var(--spotify-dark-light);
+    border-radius: 12px;
+    padding: 2.5rem;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--spotify-gray-light);
+    transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.plan-card.popular {
+    border-color: var(--spotify-green);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, var(--spotify-dark-light) 0%, #1f1f1f 100%);
+}
+
+.popular-ribbon {
+    position: absolute;
+    top: 20px;
+    right: -10px;
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    padding: 8px 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popular-ribbon::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    border-left: 10px solid var(--spotify-green);
+    border-right: 10px solid transparent;
+    border-top: 10px solid transparent;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--spotify-gray-light);
+}
+
+.plan-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--spotify-text-primary);
+}
+
+.plan-price {
+    margin: 1.5rem 0;
+}
+
+.currency {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--spotify-text-secondary);
+    vertical-align: top;
+}
+
+.price {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--spotify-text-primary);
+}
+
+.period {
+    font-size: 1rem;
+    color: var(--spotify-text-secondary);
+}
+
+.plan-description {
+    color: var(--spotify-text-secondary);
+    font-size: 0.875rem;
+}
+
+.plan-features {
+    margin: 2rem 0;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--spotify-gray-light);
+}
+
+.feature:last-child {
+    border-bottom: none;
+}
+
+.feature.disabled {
+    color: var(--spotify-text-tertiary);
+}
+
+.feature-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature i.fa-check {
+    color: var(--spotify-green);
+}
+
+.feature i.fa-times {
+    color: #ef4444;
+}
+
+.plan-actions {
+    margin-top: 2rem;
+}
+
+.current-plan {
+    background: var(--spotify-green);
+    color: var(--spotify-dark);
+    border: none;
+    opacity: 0.7;
+}
+
+.plan-note {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--spotify-text-secondary);
+    margin-top: 1rem;
+}
+
+.pricing-footer {
+    text-align: center;
+}
+
+.security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--spotify-text-secondary);
+    font-size: 0.875rem;
+}
+
+.security-badge i {
+    color: var(--spotify-green);
+}
+
+/* Testimonials */
+.testimonials {
+    padding: 100px 0;
+    background: var(--spotify-dark-light);
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.testimonial-card {
+    background: var(--spotify-dark);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--spotify-gray-light);
+    transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stars {
+    color: var(--spotify-green);
+    margin-bottom: 1rem;
+}
+
+.testimonial-content p {
+    font-style: italic;
+    color: var(--spotify-text-primary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--spotify-gray-light);
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.author-info h4 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--spotify-text-primary);
+}
+
+.author-info span {
+    font-size: 0.875rem;
+    color: var(--spotify-text-secondary);
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: 100px 0;
+    background: var(--spotify-dark);
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+}
+
+.faq-item {
+    background: var(--spotify-dark-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--spotify-gray-light);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: var(--spotify-gray);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: var(--spotify-dark-lighter);
+}
+
+.faq-question h4 {
+    flex: 1;
+    font-weight: 700;
+    color: var(--spotify-text-primary);
+    margin: 0;
+}
+
+.faq-question i {
+    color: var(--spotify-text-secondary);
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+    padding: 0 1.5rem 1.5rem;
+    max-height: 200px;
+}
+
+.faq-item.active .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-cta {
+    text-align: center;
+}
+
+.faq-cta a {
+    color: var(--spotify-green);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.faq-cta a:hover {
+    text-decoration: underline;
+}
+
+/* Final CTA */
+.final-cta {
+    background: linear-gradient(135deg, var(--spotify-dark) 0%, #1a1a1a 100%);
+    color: var(--spotify-text-primary);
+    padding: 80px 0;
+    text-align: center;
+    border-top: 1px solid var(--spotify-gray-light);
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.cta-content p {
+    font-size: 1.125rem;
+    color: var(--spotify-text-secondary);
+    margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-stats {
+        gap: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .plans-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .plan-card.popular {
+        transform: none;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.floating-element {
+    position: absolute;
+    background: var(--spotify-green);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.1;
+}
+
+.element-1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.element-2 {
+    width: 150px;
+    height: 150px;
+    top: 60%;
+    right: 10%;
+    animation-delay: 2s;
+}
+
+.element-3 {
+    width: 80px;
+    height: 80px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+</style>
+
+<script>
+// Initialize AOS
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+    });
+    
+    // FAQ toggle functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            item.classList.toggle('active');
+        });
+    });
+    
+    // Billing toggle functionality
+    const billingToggle = document.getElementById('billing-toggle');
+    const billingOptions = document.querySelectorAll('.billing-option');
+    
+    billingToggle.addEventListener('change', function() {
+        billingOptions[0].classList.toggle('active');
+        billingOptions[1].classList.toggle('active');
+        
+        // Update prices based on billing cycle
+        const prices = document.querySelectorAll('.price');
+        if (this.checked) {
+            // Yearly pricing
+            prices.forEach(price => {
+                const monthlyPrice = parseFloat(price.textContent);
+                const yearlyPrice = (monthlyPrice * 12 * 0.8).toFixed(2); // 20% discount
+                price.textContent = yearlyPrice;
+            });
+        } else {
+            // Monthly pricing
+            prices.forEach(price => {
+                const originalPrices = {0: '0', 1: '4.99', 2: '9.99'};
+                const index = Array.from(prices).indexOf(price);
+                price.textContent = originalPrices[index];
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

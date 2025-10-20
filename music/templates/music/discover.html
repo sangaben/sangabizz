@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Sangabiz | Discover{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="featured-section">
+        <h2 class="section-title"><i class="fas fa-compass"></i> Discover New Music</h2>
+        <div class="featured-grid" id="discover-songs">
+            <!-- Songs will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <section class="genres-section">
+        <h2 class="section-title"><i class="fas fa-list"></i> All Genres</h2>
+        <div class="genres-grid" id="genres-container">
+            <!-- Genres will be dynamically loaded here -->
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize the discover page
+    document.addEventListener('DOMContentLoaded', function() {
+        renderSongs(songs);
+        renderGenres(genres);
+    });
+</script>
+{% endblock %}

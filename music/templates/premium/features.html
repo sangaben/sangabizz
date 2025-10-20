@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Premium Features - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="premium-features-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Premium Features</h1>
+            <p>Unlock the full potential of your music experience</p>
+        </div>
+
+        <div class="features-grid">
+            {% for feature in features %}
+            <div class="feature-card-large">
+                <div class="feature-icon-large">
+                    <i class="{{ feature.icon }}"></i>
+                </div>
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not user_has_premium %}
+        <div class="upgrade-cta">
+            <h2>Ready to Upgrade?</h2>
+            <p>Join thousands of satisfied Premium users today</p>
+            <a href="{% url 'premium_pricing' %}" class="mdundo-btn primary large">
+                <i class="fas fa-crown"></i>
+                View Pricing Plans
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.premium-features-page {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.feature-card-large {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card-large:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon-large {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: white;
+}
+
+.feature-card-large h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.feature-card-large p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.upgrade-cta {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.upgrade-cta h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.upgrade-cta p {
+    margin-bottom: 2rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

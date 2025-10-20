@@ -1,0 +1,574 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>{{ title }}</h1>
+        <p>Discover {{ artists_count }} amazing artists on Sangabiz</p>
+        
+        <!-- Become Artist CTA for authenticated users -->
+        {% if user.is_authenticated and not user.artist_profile %}
+        <div class="become-artist-cta">
+            <p>Are you an artist? Share your music with the world!</p>
+            <a href="{% url 'become_artist' %}" class="btn-primary">
+                <i class="fas fa-user-plus"></i>
+                Become an Artist
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Artists Filter/Search -->
+    <div class="artists-filters">
+        <div class="search-box">
+            <form method="GET" action="{% url 'artists_list' %}">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search artists...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="filter-options">
+            <form method="GET" action="{% url 'artists_list' %}" id="filterForm">
+                <select name="genre" onchange="this.form.submit()">
+                    <option value="">All Genres</option>
+                    {% for genre in genres %}
+                    <option value="{{ genre.name }}" {% if selected_genre == genre.name %}selected{% endif %}>
+                        {{ genre.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
+                    <option value="songs" {% if sort_by == 'songs' %}selected{% endif %}>Most Songs</option>
+                    <option value="plays" {% if sort_by == 'plays' %}selected{% endif %}>Most Popular</option>
+                    <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>Recently Added</option>
+                </select>
+                {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            </form>
+        </div>
+    </div>
+    
+    <div class="artists-grid">
+        {% for artist in artists %}
+        <div class="artist-card">
+            <div class="artist-image">
+                {% if artist.image %}
+                    <img src="{{ artist.image.url }}" alt="{{ artist.name }}" loading="lazy">
+                {% else %}
+                    <div class="artist-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+                {% if artist.is_verified %}
+                <div class="verified-badge">
+                    <i class="fas fa-check"></i>
+                </div>
+                {% endif %}
+                
+                <!-- New Artist Badge -->
+                {% if artist.is_new_artist %}
+                <div class="new-badge">
+                    <i class="fas fa-star"></i>
+                    New
+                </div>
+                {% endif %}
+            </div>
+            <div class="artist-info">
+                <h3>{{ artist.name }}</h3>
+                <p class="genre">{{ artist.genre.name|default:"No genre" }}</p>
+                <div class="artist-stats">
+                    <span><i class="fas fa-music"></i> {{ artist.total_songs }} songs</span>
+                    <span><i class="fas fa-play-circle"></i> {{ artist.total_plays }} plays</span>
+                </div>
+                <div class="artist-actions">
+                    <a href="{% url 'artist_detail' artist.id %}" class="view-profile-btn">
+                        View Profile
+                    </a>
+                    {% if user.is_authenticated and user != artist.user %}
+                    <button class="follow-btn {% if artist.is_followed %}following{% endif %}" 
+                            onclick="followArtist({{ artist.id }}, this)">
+                        {% if artist.is_followed %}
+                            <i class="fas fa-check"></i> Following
+                        {% else %}
+                            <i class="fas fa-plus"></i> Follow
+                        {% endif %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-artists">
+            <i class="fas fa-users"></i>
+            <h3>No artists found</h3>
+            <p>{% if search_query %}Try adjusting your search criteria{% else %}Be the first to share your music!{% endif %}</p>
+            {% if user.is_authenticated and not search_query %}
+            <a href="{% url 'upload_music' %}" class="btn-primary">
+                Upload Your First Song
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+    .artists-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .artist-card {
+        padding: 15px;
+    }
+    
+    .artist-image {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+    }
+    
+    .artist-info h3 {
+        font-size: 1rem;
+    }
+    
+    .artist-stats {
+        flex-direction: row;
+        gap: 10px;
+        font-size: 0.75rem;
+        justify-content: center;
+        flex-wrap: nowrap;
+        margin: 10px 0;
+    }
+    
+    .artist-stats span {
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+    
+    .view-profile-btn {
+        width: 100%;
+        padding: 8px 15px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        text-align: center;
+    }
+    
+    .follow-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .artists-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.artist-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.artist-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.artist-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.artist-card:hover::before {
+    transform: scaleX(1);
+}
+
+.artist-image {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    position: relative;
+}
+
+.artist-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.artist-card:hover .artist-image img {
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.artist-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.verified-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--primary);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    border: 2px solid var(--card-bg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.new-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #e84393;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.artist-info h3 {
+    margin: 0 0 10px 0;
+    color: var(--light);
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.artist-info .genre {
+    color: var(--primary);
+    margin: 0 0 15px 0;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.artist-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 15px 0;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.artist-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.artist-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.view-profile-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.view-profile-btn:hover {
+    background: #5649c0;
+    transform: translateY(-2px);
+}
+
+.follow-btn {
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.follow-btn:hover {
+    border-color: var(--primary);
+    background: rgba(108, 92, 231, 0.1);
+}
+
+.follow-btn.following {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--primary);
+}
+
+.no-artists {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray);
+    grid-column: 1 / -1;
+}
+
+.no-artists i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.become-artist-cta {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.become-artist-cta p {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.artists-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+}
+
+.search-box button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+}
+
+.filter-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-options select {
+    padding: 12px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.filter-options select option {
+    background: #2d3436;
+    color: white;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    color: var(--gray);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+</style>
+
+<script>
+function followArtist(artistId, button) {
+    fetch(`/follow-artist/${artistId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.followed) {
+            button.innerHTML = '<i class="fas fa-check"></i> Following';
+            button.classList.add('following');
+            showNotification(`Now following artist!`, 'success');
+        } else {
+            button.innerHTML = '<i class="fas fa-plus"></i> Follow';
+            button.classList.remove('following');
+            showNotification(`Unfollowed artist`, 'info');
+        }
+    })
+    .catch(error => {
+        console.error('Error following artist:', error);
+        showNotification('Error following artist', 'error');
+    });
+}
+
+// Utility function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    // Add styles if not already added
+    if (!document.querySelector('#notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'notification-styles';
+        styles.textContent = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #282828;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            }
+            .notification.success { border-left: 4px solid #1DB954; }
+            .notification.error { border-left: 4px solid #e74c3c; }
+            .notification.info { border-left: 4px solid #3498db; }
+            .notification button {
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Artists page loaded with auto-artist system');
+});
+</script>
+{% endblock %}

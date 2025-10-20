@@ -1,0 +1,896 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Artist Dashboard - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="artist-dashboard">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="artist-info">
+                <div class="artist-avatar">
+                    {% if artist.image %}
+                        <img src="{{ artist.image.url }}" alt="{{ artist.name }}">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    {% if artist.is_verified %}
+                    <div class="verified-badge">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="artist-details">
+                    <h1>{{ artist.name }}</h1>
+                    <p class="artist-genre">
+                        <i class="fas fa-music"></i>
+                        {{ artist.genre.name|default:"No genre set" }}
+                    </p>
+                    <p class="artist-bio">{{ artist.bio|default:"Tell your story..." }}</p>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_plays }}</h3>
+                        <p>Total Plays</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_downloads }}</h3>
+                        <p>Downloads</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_likes }}</h3>
+                        <p>Likes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_followers }}</h3>
+                        <p>Followers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{% url 'upload_music' %}" class="action-btn primary">
+            <i class="fas fa-upload"></i>
+            Upload Song
+        </a>
+        <button class="action-btn secondary">
+            <i class="fas fa-chart-line"></i>
+            View Analytics
+        </button>
+        <button class="action-btn secondary">
+            <i class="fas fa-edit"></i>
+            Edit Profile
+        </button>
+        <button class="action-btn secondary">
+            <i class="fas fa-share-alt"></i>
+            Share Profile
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <!-- Recent Uploads Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Your Songs</h2>
+                <a href="{% url 'my_uploads' %}" class="view-all-btn">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="songs-grid">
+                {% for song in recent_songs %}
+                <div class="song-card">
+                    <div class="song-cover">
+                        {% if song.cover_image %}
+                            <img src="{{ song.cover_image.url }}" alt="{{ song.title }}">
+                        {% else %}
+                            <div class="cover-placeholder">
+                                <i class="fas fa-music"></i>
+                            </div>
+                        {% endif %}
+                        <div class="song-actions">
+                            <button class="action-icon play-btn" onclick="playSong({{ song.id }})">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="action-icon" onclick="editSong({{ song.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="song-info">
+                        <h4>{{ song.title }}</h4>
+                        <p class="song-meta">
+                            <span class="plays"><i class="fas fa-play"></i> {{ song.plays }}</span>
+                            <span class="downloads"><i class="fas fa-download"></i> {{ song.downloads }}</span>
+                        </p>
+                        <p class="song-date">{{ song.upload_date|date:"M d, Y" }}</p>
+                        <div class="song-status">
+                            {% if song.is_approved %}
+                            <span class="status approved">Approved</span>
+                            {% else %}
+                            <span class="status pending">Pending</span>
+                            {% endif %}
+                            {% if song.is_featured %}
+                            <span class="status featured">Featured</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>No songs uploaded yet</h3>
+                    <p>Start your journey by uploading your first song</p>
+                    <a href="{% url 'upload_music' %}" class="upload-cta">
+                        Upload Your First Song
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Analytics & Stats Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Performance Analytics</h2>
+                <div class="time-filter">
+                    <select id="timeRange">
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d" selected>Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="1y">Last Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>Plays Over Time</h4>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>Plays chart will appear here</p>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <h4>Top Songs</h4>
+                    <div class="top-songs-list">
+                        {% for song in top_songs %}
+                        <div class="top-song-item">
+                            <span class="rank">{{ forloop.counter }}</span>
+                            <div class="song-details">
+                                <strong>{{ song.title }}</strong>
+                                <span>{{ song.plays }} plays</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="no-data">No song data available</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Recent Activity</h2>
+            </div>
+            <div class="activity-list">
+                {% for activity in recent_activity %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-{{ activity.icon }}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p>{{ activity.message }}</p>
+                        <span class="activity-time">{{ activity.time }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-activity">
+                    <i class="fas fa-bell"></i>
+                    <p>No recent activity</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message Toast -->
+<div id="successToast" class="toast">
+    <div class="toast-content">
+        <i class="fas fa-check-circle"></i>
+        <span class="toast-message">Song uploaded successfully!</span>
+    </div>
+</div>
+
+<style>
+.artist-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+}
+
+/* Header Styles */
+.dashboard-header {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.9), rgba(253, 121, 168, 0.8));
+    padding: 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background-size: cover;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.artist-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.artist-avatar {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.artist-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.verified-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #6c5ce7;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 2px solid white;
+}
+
+.artist-details h1 {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+}
+
+.artist-genre {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 5px 0;
+    font-size: 1.1rem;
+}
+
+.artist-bio {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.header-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    min-width: 120px;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #6c5ce7;
+}
+
+.stat-info h3 {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+/* Quick Actions */
+.quick-actions {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+}
+
+.action-btn.primary {
+    background: #6c5ce7;
+    color: white;
+}
+
+.action-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn.primary:hover {
+    background: #5649c0;
+}
+
+/* Content Sections */
+.dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: grid;
+    gap: 30px;
+}
+
+.content-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #6c5ce7;
+}
+
+.view-all-btn {
+    background: none;
+    border: none;
+    color: #6c5ce7;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+
+/* Songs Grid */
+.songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.song-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.song-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.song-cover {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.song-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.cover-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6c5ce7, #fd79a8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+}
+
+.song-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.song-card:hover .song-actions {
+    opacity: 1;
+}
+
+.action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #6c5ce7;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.action-icon:hover {
+    background: #5649c0;
+    transform: scale(1.1);
+}
+
+.song-info {
+    padding: 15px;
+}
+
+.song-info h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.song-meta {
+    display: flex;
+    gap: 15px;
+    margin: 8px 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.song-date {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 5px 0;
+}
+
+.song-status {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.status {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status.approved {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.status.pending {
+    background: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+.status.featured {
+    background: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+}
+
+/* Empty States */
+.empty-state, .empty-activity {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state i, .empty-activity i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #6c5ce7;
+}
+
+.upload-cta {
+    background: #6c5ce7;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.upload-cta:hover {
+    background: #5649c0;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+/* Analytics */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.analytics-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-card h4 {
+    margin: 0 0 15px 0;
+    color: #6c5ce7;
+}
+
+.chart-placeholder {
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.chart-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.top-songs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.top-song-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.rank {
+    background: #6c5ce7;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.song-details {
+    flex: 1;
+}
+
+.song-details strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.song-details span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.no-data {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border-left: 4px solid #6c5ce7;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(108, 92, 231, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c5ce7;
+}
+
+.activity-content p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2ecc71;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: none;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .header-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quick-actions {
+        justify-content: center;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .songs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .artist-details h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-section {
+        padding: 20px;
+    }
+
+    .header-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .songs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .artist-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Song Actions
+function playSong(songId) {
+    console.log('Playing song:', songId);
+    // Implement play functionality
+}
+
+function editSong(songId) {
+    console.log('Editing song:', songId);
+    // Redirect to edit page or open edit modal
+    window.location.href = `/edit-song/${songId}/`;
+}
+
+function viewAllSongs() {
+    // Already handled by the link
+}
+
+// Time Range Filter
+document.getElementById('timeRange').addEventListener('change', function(e) {
+    console.log('Time range changed to:', e.target.value);
+    // Implement analytics filtering
+    // You can add AJAX call here to update analytics data
+});
+
+// Show success toast (for future use after uploads)
+function showSuccessToast(message) {
+    const toast = document.getElementById('successToast');
+    const messageEl = toast.querySelector('.toast-message');
+    messageEl.textContent = message || 'Operation completed successfully!';
+    toast.style.display = 'flex';
+    
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+// Check if there's a success message from the server
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Artist dashboard loaded');
+    
+    // Check for URL parameters indicating success
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('upload_success') === 'true') {
+        showSuccessToast('Song uploaded successfully!');
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Add click handlers for better mobile support
+    const songCards = document.querySelectorAll('.song-card');
+    songCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('.song-actions')) {
+                const songId = this.querySelector('.play-btn').getAttribute('onclick').match(/\d+/)[0];
+                playSong(songId);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
