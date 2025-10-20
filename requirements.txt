@@ -3,4 +3,4 @@ gunicorn==23.0.0
 whitenoise==6.9.0
 dj-database-url==3.0.1
 django-jazzmin==3.0.1
-unfold
+django-unfold==0.68.0
