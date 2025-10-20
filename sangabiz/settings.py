@@ -18,11 +18,11 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
-    'sangabiz.onrender.com',  # Add your Render domain here
+    'sangabizug.onrender.com',  # Add your Render domain here
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://sangabiz.onrender.com',
+    'https://sangabizug.onrender.com',
 ]
 
 # -------------------------
