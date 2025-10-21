@@ -11,19 +11,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------------
 # Security and Debug Settings
 # -------------------------
-SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = False
+ALLOWED_HOSTS = ['sangabizug.onrender.com', 'localhost']
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    'sangabizug.onrender.com',  # Render domain
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://sangabizug.onrender.com',
-]
 
 # -------------------------
 # Installed Apps
