@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'music.apps.MusicConfig',  # Your music app
+    'music',  # Your music app
     #'crispy_forms',  # For better form rendering
     #'crispy_bootstrap5',  # Bootstrap 5 template pack
 ]
