@@ -1,5 +1,5 @@
 """
-Django settings for Sangabiz project (Render-ready + media support).
+Django settings for Sangabiz project (Render-ready + media + local support).
 """
 
 from pathlib import Path
@@ -11,9 +11,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------------
 # Security and Debug Settings
 # -------------------------
-DEBUG = False
-ALLOWED_HOSTS = ['sangabizug.onrender.com', 'localhost']
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'  # True for local dev
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'sangabizug.onrender.com',
+]
+
+# CSRF trusted origins (for both HTTP localhost and HTTPS Render)
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'https://sangabizug.onrender.com',
+]
 
 # -------------------------
 # Installed Apps
@@ -37,7 +50,7 @@ INSTALLED_APPS = [
 # -------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Handles static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,7 +120,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'music/static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ⚠️ MEDIA settings (for songs, images, uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -132,7 +144,7 @@ LOGOUT_REDIRECT_URL = 'index'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # -------------------------
-# Security (Production vs Dev)
+# Security Settings
 # -------------------------
 if DEBUG:
     SESSION_COOKIE_SECURE = False
