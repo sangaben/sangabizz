@@ -4,54 +4,53 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('discover/', views.discover, name='discover'),
-    path('library/', views.library, name='library'),
-    path('playlists/', views.playlists, name='playlists'),
+    path('search/', views.search, name='search'),
     path('genres/', views.genres, name='genres'),
     path('genre/<int:genre_id>/', views.genre_songs, name='genre_songs'),
-    path('play-song/<int:song_id>/', views.play_song, name='play_song'),
-    path('like-song/<int:song_id>/', views.like_song, name='like_song'),
     path('download-song/<int:song_id>/', views.download_song, name='download_song'),
-    path('search/', views.search, name='search'),
-    path('analytics/song/<int:song_id>/', views.song_analytics, name='song_analytics'),
-    path('analytics/top-songs/', views.top_songs, name='top_songs'),
+    path('song/<int:song_id>/', views.song_detail, name='song_detail'),
     
-    # AUTH URLS - ADD THE ACCOUNTS/ PATHS TO HANDLE DJANGO REDIRECTS
-    path('accounts/login/', views.login_view, name='login'),  # ADD THIS
-    path('accounts/logout/', views.logout_view, name='logout'),  # ADD THIS
-    path('logout/', views.logout_view, name='logout'),
-    path('login/', views.login_view, name='login'),
-    path('signup/', views.signup, name='signup'),
+    # Play and interaction URLs
+    path('play-song/<int:song_id>/', views.play_song, name='play_song'),
+    path('update-play-duration/<int:song_id>/', views.update_play_duration, name='update_play_duration'),
+    path('follow-artist/<int:artist_id>/', views.follow_artist_from_music, name='follow_artist_music'),
     
-    path('get-song-stats/<int:song_id>/', views.get_song_stats, name='get_song_stats'),
-    path('upload/', views.upload_music, name='upload_music'),
-    path('my-uploads/', views.my_uploads, name='my_uploads'),
-    path('artist/dashboard/', views.artist_dashboard, name='artist_dashboard'),
+    # Activity and rankings
+    path('top-songs/', views.top_songs, name='top_songs'),
+    path('activity/', views.recent_activity, name='recent_activity'),
     
-    # ADD THESE MISSING URLS:
-    path('artists/', views.artists, name='artists'),
-    path('trending-artists/', views.trending_artists, name='trending_artists'),
-    path('artist/<int:artist_id>/', views.artist_detail, name='artist_detail'),
-    path('increment-play-count/<int:song_id>/', views.increment_play_count, name='increment_play_count'),
-    path('increment-download-count/<int:song_id>/', views.increment_download_count, name='increment_download_count'),
-    path('follow-artist/<int:artist_id>/', views.follow_artist, name='follow_artist'),
+    # News section URLs
+    path('news/', views.news_view, name='news'),
+    path('news/<slug:slug>/', views.news_detail_view, name='news_detail'),
+    #path('api/track-news-view/', views.track_news_view, name='track_news_view'),
     
-    # PLAYLIST MANAGEMENT URLS
-    path('playlist/<int:playlist_id>/', views.playlist_detail, name='playlist_detail'),
-    path('add-to-playlist/<int:song_id>/', views.add_to_playlist, name='add_to_playlist'),
-    path('remove-from-playlist/<int:playlist_id>/<int:song_id>/', views.remove_from_playlist, name='remove_from_playlist'),
-    path('delete-playlist/<int:playlist_id>/', views.delete_playlist, name='delete_playlist'),
+    # Video interaction URLs
+    path('api/track-video-play/', views.track_video_play, name='track_video_play'),
+    #path('api/like-video/', views.like_video, name='like_video'),
     
-    # User profile and settings URLs
-    path('profile/', views.profile_view, name='profile'),
-    path('settings/', views.settings_view, name='settings'),
-    path('help/', views.help_center, name='help_center'),
+    # Charts and events
+   # path('charts/', views.charts_view, name='charts'),
+    #path('charts/<int:chart_id>/', views.chart_detail_view, name='chart_detail'),
+    #path('events/', views.events_view, name='events'),
+    #path('radio/', views.radio_view, name='radio'),
+    path('videos/', views.videos_view, name='videos'),
+
+     # API endpoints for tracking
+    path('api/track-play/', views.api_track_play, name='api_track_play'),
+    path('api/track-download/', views.api_track_download, name='api_track_download'),
+    path('api/songs/<int:song_id>/like/', views.api_like_song, name='api_like_song'),
+    path('api/artists/<int:artist_id>/follow/', views.api_follow_artist, name='api_follow_artist'),
     
-    # Premium URLs (you already have these from earlier)
-    path('premium/', views.premium_pricing, name='premium_pricing'),
-    path('premium/features/', views.premium_features, name='premium_features'),
-    path('premium/payment/<str:plan_type>/', views.process_payment, name='process_payment'),
-    path('premium/success/', views.premium_success, name='premium_success'),
-    
-    # ADD THESE MISSING PLAYLIST API ENDPOINTS
-    path('play-playlist/<int:playlist_id>/', views.play_playlist, name='play_playlist'),  # ADD THIS
+    # Alternative endpoints for compatibility
+    path('api/play/', views.api_track_play, name='play_track'),
+    path('api/download/', views.api_track_download, name='download_track'),
+
+
+    path('news/', views.news_view, name='news'),
+    path('news/<slug:slug>/', views.news_detail_view, name='news_detail'),
+    path('news/<int:article_id>/like/', views.like_news_article, name='like_news_article'),
+    path('news/comment/<int:comment_id>/like/', views.like_news_comment, name='like_news_comment'),
+    path('news/subscribe/', views.subscribe_news, name='subscribe_news'),
+    path('news/unsubscribe/', views.unsubscribe_news, name='unsubscribe_news'),
+
 ]

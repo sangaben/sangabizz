@@ -1,0 +1,991 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ article.title }} - Sangabiz News{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav">
+        <a href="{% url 'home' %}">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="{% url 'news' %}">News</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>{{ article.title|truncatewords:5 }}</span>
+    </nav>
+
+    <!-- Article Content -->
+    <article class="news-article">
+        <header class="article-header">
+            <span class="article-category {{ article.category }}">{{ article.get_category_display }}</span>
+            <h1 class="article-title">{{ article.title }}</h1>
+            
+            <div class="article-meta">
+                <div class="meta-left">
+                    <span class="article-date">
+                        <i class="far fa-calendar"></i>
+                        {{ article.published_date|date:"F d, Y" }}
+                    </span>
+                    <span class="article-author">
+                        <i class="far fa-user"></i>
+                        By {{ article.author }}
+                    </span>
+                    <span class="article-views">
+                        <i class="far fa-eye"></i>
+                        {{ article.views }} views
+                    </span>
+                </div>
+                <div class="meta-right">
+                    <!-- Like Button -->
+                    <div class="like-section">
+                        <button class="like-btn {% if user_has_liked %}liked{% endif %}" 
+                                id="like-article-btn" 
+                                data-article-id="{{ article.id }}"
+                                {% if not user.is_authenticated %}disabled title="Login to like"{% endif %}>
+                            <i class="{% if user_has_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span class="like-count" id="like-count">{{ like_count }}</span>
+                        </button>
+                    </div>
+                    <span class="article-share" id="share-trigger">
+                        <i class="fas fa-share-alt"></i>
+                        Share
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        {% if article.featured_image %}
+        <div class="article-image">
+            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}">
+        </div>
+        {% endif %}
+
+        <div class="article-content">
+            {{ article.content|linebreaks }}
+        </div>
+
+        <footer class="article-footer">
+            <div class="article-tags">
+                <span class="tags-label">Tags:</span>
+                <span class="tag">{{ article.get_category_display }}</span>
+                <span class="tag">Music</span>
+                <span class="tag">News</span>
+            </div>
+            
+            <!-- Share Dropdown -->
+            <div class="share-dropdown" id="share-dropdown">
+                <button class="share-btn facebook" onclick="shareOnFacebook()">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook
+                </button>
+                <button class="share-btn twitter" onclick="shareOnTwitter()">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </button>
+                <button class="share-btn whatsapp" onclick="shareOnWhatsApp()">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </button>
+                <button class="share-btn link" onclick="copyArticleLink()">
+                    <i class="fas fa-link"></i>
+                    Copy Link
+                </button>
+            </div>
+        </footer>
+    </article>
+
+    <!-- Comments Section -->
+    <section class="comments-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="fas fa-comments"></i>
+                Comments ({{ comments.count }})
+            </h3>
+        </div>
+
+        <!-- Comment Form -->
+        {% if user.is_authenticated %}
+        <div class="comment-form-container">
+            <form method="post" class="comment-form" id="comment-form">
+                {% csrf_token %}
+                <input type="hidden" name="comment_submit" value="1">
+                <div class="form-group">
+                    {{ comment_form.content }}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% else %}
+        <div class="login-prompt">
+            <p>
+                <a href="{% url 'login' %}?next={{ request.path }}">Login</a> 
+                to join the conversation and post comments.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Comments List -->
+        <div class="comments-list" id="comments-list">
+            {% for comment in comments %}
+            <div class="comment-item" data-comment-id="{{ comment.id }}">
+                <div class="comment-avatar">
+                    <div class="avatar-placeholder">
+                        {{ comment.user.username|first|upper }}
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.user.username }}</span>
+                        <span class="comment-date">{{ comment.created_at|timesince }} ago</span>
+                    </div>
+                    <div class="comment-text">
+                        {{ comment.content|linebreaks }}
+                    </div>
+                    <div class="comment-actions">
+                        <button class="like-comment-btn {% if comment.user_has_liked %}liked{% endif %}" 
+                                data-comment-id="{{ comment.id }}"
+                                {% if not user.is_authenticated %}disabled{% endif %}>
+                            <i class="{% if comment.user_has_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span class="like-count">{{ comment.get_like_count }}</span>
+                        </button>
+                        {% if comment.user == user %}
+                        <button class="delete-comment-btn" data-comment-id="{{ comment.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-comments">
+                <i class="fas fa-comment-slash"></i>
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Related Articles -->
+    {% if related_articles %}
+    <section class="related-articles">
+        <h3 class="section-title">Related Articles</h3>
+        <div class="related-grid">
+            {% for related_article in related_articles %}
+            <div class="related-card">
+                {% if related_article.featured_image %}
+                <div class="related-image">
+                    <img src="{{ related_article.featured_image.url }}" alt="{{ related_article.title }}">
+                </div>
+                {% endif %}
+                <div class="related-content">
+                    <span class="related-category">{{ related_article.get_category_display }}</span>
+                    <h4 class="related-title">
+                        <a href="{% url 'news_detail' related_article.slug %}">
+                            {{ related_article.title }}
+                        </a>
+                    </h4>
+                    <span class="related-date">{{ related_article.published_date|date:"M d, Y" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<!-- Newsletter Subscription -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h3>Stay Updated with Music News</h3>
+            <p>Get the latest music industry news, artist updates, and exclusive content delivered to your inbox.</p>
+            <form method="post" class="newsletter-form" id="newsletter-form">
+                {% csrf_token %}
+                <input type="hidden" name="subscribe_submit" value="1">
+                {{ subscription_form.email }}
+                <button type="submit" class="primary-btn">Subscribe</button>
+            </form>
+            <p class="privacy-note">We respect your privacy. Unsubscribe at any time.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.breadcrumb-nav a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.breadcrumb-nav a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-nav i {
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.news-article {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 40px;
+}
+
+.article-header {
+    margin-bottom: 30px;
+}
+
+.article-category {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--primary);
+    color: var(--dark);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
+
+.article-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--light);
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.meta-left {
+    display: flex;
+    gap: 20px;
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.meta-left span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.meta-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.like-section {
+    display: flex;
+    align-items: center;
+}
+
+.like-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: var(--gray);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.like-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.15);
+    color: var(--light);
+}
+
+.like-btn.liked {
+    color: var(--primary);
+    background: rgba(29, 185, 84, 0.2);
+}
+
+.like-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.article-share {
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    transition: var(--transition);
+}
+
+.article-share:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.article-image {
+    margin: 30px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.article-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.article-content {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--light);
+}
+
+.article-content p {
+    margin-bottom: 20px;
+}
+
+.article-footer {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.article-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tags-label {
+    color: var(--gray);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.1);
+    color: var(--light);
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.share-dropdown {
+    display: none;
+    position: absolute;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 100;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.share-dropdown.show {
+    display: flex;
+}
+
+.share-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    text-align: left;
+    width: 150px;
+}
+
+.share-btn.facebook { background: #3b5998; }
+.share-btn.twitter { background: #1da1f2; }
+.share-btn.whatsapp { background: #25d366; }
+.share-btn.link { background: var(--primary); }
+
+.share-btn:hover {
+    transform: translateX(5px);
+    opacity: 0.9;
+}
+
+/* Comments Section */
+.comments-section {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 40px;
+}
+
+.section-header {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    color: var(--light);
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-form-container {
+    margin-bottom: 30px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    color: var(--light);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 100px;
+    transition: var(--transition);
+}
+
+.comment-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255,255,255,0.08);
+}
+
+.form-actions {
+    margin-top: 15px;
+}
+
+.login-prompt {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.login-prompt a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-prompt a:hover {
+    text-decoration: underline;
+}
+
+.comments-list {
+    space-y: 20px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.comment-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-author {
+    color: var(--light);
+    font-weight: 600;
+}
+
+.comment-date {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+.comment-text {
+    color: var(--light);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.like-comment-btn, .delete-comment-btn {
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+.like-comment-btn:hover:not(:disabled), .delete-comment-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--light);
+}
+
+.like-comment-btn.liked {
+    color: var(--primary);
+}
+
+.like-comment-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.no-comments {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray);
+}
+
+.no-comments i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Related Articles and Newsletter styles remain the same as before */
+.related-articles {
+    margin: 60px 0;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.related-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.related-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.related-image {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+}
+
+.related-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.related-card:hover .related-image img {
+    transform: scale(1.05);
+}
+
+.related-content {
+    padding: 20px;
+}
+
+.related-category {
+    display: inline-block;
+    padding: 4px 8px;
+    background: var(--primary);
+    color: var(--dark);
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.related-title {
+    margin: 0 0 10px 0;
+}
+
+.related-title a {
+    color: var(--light);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.related-title a:hover {
+    color: var(--primary);
+}
+
+.related-date {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+.newsletter-section {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 60px 0;
+    margin-top: 60px;
+}
+
+.newsletter-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newsletter-content h3 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.newsletter-content p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: white;
+    color: var(--dark);
+    font-size: 16px;
+    outline: none;
+}
+
+.newsletter-form input::placeholder {
+    color: var(--gray);
+}
+
+.newsletter-form .primary-btn {
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.newsletter-form .primary-btn:hover {
+    background: #191414;
+    transform: translateY(-2px);
+}
+
+.privacy-note {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    margin-top: 15px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .news-article {
+        padding: 25px;
+    }
+    
+    .article-title {
+        font-size: 1.8rem;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .meta-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .meta-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .article-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .share-dropdown {
+        position: relative;
+        width: 100%;
+    }
+    
+    .comments-section {
+        padding: 25px;
+    }
+    
+    .comment-item {
+        flex-direction: column;
+    }
+    
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .related-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .newsletter-content h3 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Share functionality
+const shareTrigger = document.getElementById('share-trigger');
+const shareDropdown = document.getElementById('share-dropdown');
+
+if (shareTrigger && shareDropdown) {
+    shareTrigger.addEventListener('click', function() {
+        shareDropdown.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!shareTrigger.contains(event.target) && !shareDropdown.contains(event.target)) {
+            shareDropdown.classList.remove('show');
+        }
+    });
+}
+
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent("{{ article.title }}");
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${title}`, '_blank');
+    shareDropdown.classList.remove('show');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent("{{ article.title }}");
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    shareDropdown.classList.remove('show');
+}
+
+function shareOnWhatsApp() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent("{{ article.title }}");
+    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+    shareDropdown.classList.remove('show');
+}
+
+function copyArticleLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(function() {
+        // Show success message
+        const originalText = shareTrigger.innerHTML;
+        shareTrigger.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            shareTrigger.innerHTML = originalText;
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+    });
+    shareDropdown.classList.remove('show');
+}
+
+// Like functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Article like functionality
+    const likeArticleBtn = document.getElementById('like-article-btn');
+    if (likeArticleBtn) {
+        likeArticleBtn.addEventListener('click', function() {
+            const articleId = this.dataset.articleId;
+            likeArticle(articleId, this);
+        });
+    }
+
+    // Comment like functionality
+    const likeCommentBtns = document.querySelectorAll('.like-comment-btn');
+    likeCommentBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            likeComment(commentId, this);
+        });
+    });
+});
+
+function likeArticle(articleId, button) {
+    if (button.disabled) return;
+
+    fetch(`/news/${articleId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const icon = button.querySelector('i');
+            const countSpan = button.querySelector('.like-count');
+            
+            if (data.liked) {
+                button.classList.add('liked');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                button.classList.remove('liked');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+            
+            countSpan.textContent = data.like_count;
+        }
+    })
+    .catch(error => {
+        console.error('Error liking article:', error);
+    });
+}
+
+function likeComment(commentId, button) {
+    if (button.disabled) return;
+
+    fetch(`/news/comment/${commentId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const icon = button.querySelector('i');
+            const countSpan = button.querySelector('.like-count');
+            
+            if (data.liked) {
+                button.classList.add('liked');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                button.classList.remove('liked');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+            
+            countSpan.textContent = data.like_count;
+        }
+    })
+    .catch(error => {
+        console.error('Error liking comment:', error);
+    });
+}
+
+// CSRF token helper function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

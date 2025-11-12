@@ -1,0 +1,1429 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="container legal-container">
+    <!-- Header Section -->
+    <div class="legal-header">
+        <h1>Privacy Policy</h1>
+        <p class="legal-subtitle">Last updated: {% now "F j, Y" %}</p>
+        <div class="legal-badge">
+            <i class="fas fa-user-shield"></i>
+            Privacy & Data
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="legal-nav">
+        <h3>Quick Navigation</h3>
+        <div class="nav-links">
+            <a href="#introduction" class="nav-link">1. Introduction</a>
+            <a href="#information" class="nav-link">2. Information We Collect</a>
+            <a href="#usage" class="nav-link">3. How We Use Information</a>
+            <a href="#sharing" class="nav-link">4. Information Sharing</a>
+            <a href="#security" class="nav-link">5. Data Security</a>
+            <a href="#rights" class="nav-link">6. Your Rights</a>
+            <a href="#cookies" class="nav-link">7. Cookies & Tracking</a>
+            <a href="#children" class="nav-link">8. Children's Privacy</a>
+            <a href="#international" class="nav-link">9. International Transfers</a>
+            <a href="#changes" class="nav-link">10. Policy Changes</a>
+            <a href="#contact" class="nav-link">11. Contact Us</a>
+        </div>
+    </div>
+
+    <!-- Privacy Content -->
+    <div class="legal-content">
+        <!-- Section 1 -->
+        <section id="introduction" class="legal-section">
+            <h2>1. Introduction</h2>
+            <div class="section-content">
+                <p>Welcome to Sangabiz's Privacy Policy. We respect your privacy and are committed to protecting your personal data.</p>
+
+                <div class="highlight-box">
+                    <div class="highlight-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="highlight-content">
+                        <strong>Transparency:</strong> This policy explains how we collect, use, and protect your information when you use our Service.
+                    </div>
+                </div>
+
+                <h3>1.1 About This Policy</h3>
+                <p>This Privacy Policy applies to all users of Sangabiz's services, including our website, mobile applications, and related services.</p>
+
+                <h3>1.2 Consent</h3>
+                <p>By using our Service, you consent to the collection and use of your information as described in this policy.</p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section id="information" class="legal-section">
+            <h2>2. Information We Collect</h2>
+            <div class="section-content">
+                <p>We collect several types of information to provide and improve our Service.</p>
+
+                <div class="data-categories">
+                    <h3>2.1 Personal Information</h3>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="data-text">
+                                <h4>Account Information</h4>
+                                <p>Name, email, username, profile picture</p>
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="data-text">
+                                <h4>Music Preferences</h4>
+                                <p>Listening history, liked songs, playlists</p>
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-icon">
+                                <i class="fas fa-money-bill"></i>
+                            </div>
+                            <div class="data-text">
+                                <h4>Payment Information</h4>
+                                <p>Billing address, payment method (processed by payment providers)</p>
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-icon">
+                                <i class="fas fa-device"></i>
+                            </div>
+                            <div class="data-text">
+                                <h4>Device Information</h4>
+                                <p>Device type, operating system, IP address</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>2.2 Automatically Collected Information</h3>
+                <ul class="feature-list">
+                    <li><i class="fas fa-play-circle"></i> <strong>Usage Data:</strong> Songs played, search queries, features used</li>
+                    <li><i class="fas fa-cookie"></i> <strong>Cookies & Tracking:</strong> Session data, preferences, analytics</li>
+                    <li><i class="fas fa-location-dot"></i> <strong>Location Data:</strong> General location for content licensing</li>
+                </ul>
+
+                <h3>2.3 Information from Third Parties</h3>
+                <p>We may receive information from social media services when you connect your account.</p>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section id="usage" class="legal-section">
+            <h2>3. How We Use Your Information</h2>
+            <div class="section-content">
+                <p>We use your information to provide, maintain, and improve our Service.</p>
+
+                <div class="usage-grid">
+                    <div class="usage-item">
+                        <div class="usage-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="usage-text">
+                            <h4>Service Delivery</h4>
+                            <p>Provide music streaming and personalized features</p>
+                        </div>
+                    </div>
+                    <div class="usage-item">
+                        <div class="usage-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="usage-text">
+                            <h4>Communications</h4>
+                            <p>Send service updates and promotional offers</p>
+                        </div>
+                    </div>
+                    <div class="usage-item">
+                        <div class="usage-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="usage-text">
+                            <h4>Analytics</h4>
+                            <p>Improve our Service and user experience</p>
+                        </div>
+                    </div>
+                    <div class="usage-item">
+                        <div class="usage-icon">
+                            <i class="fas fa-shield"></i>
+                        </div>
+                        <div class="usage-text">
+                            <h4>Security</h4>
+                            <p>Protect against fraud and abuse</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>3.1 Legal Basis for Processing</h3>
+                <p>We process your data based on:</p>
+                <ul>
+                    <li><strong>Contract:</strong> To provide the services you requested</li>
+                    <li><strong>Consent:</strong> When you agree to specific processing</li>
+                    <li><strong>Legitimate Interests:</strong> To improve our Service and prevent fraud</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section id="sharing" class="legal-section">
+            <h2>4. Information Sharing</h2>
+            <div class="section-content">
+                <p>We do not sell your personal data. We may share information in these limited circumstances:</p>
+
+                <div class="sharing-cards">
+                    <div class="sharing-card">
+                        <div class="sharing-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="sharing-content">
+                            <h4>Service Providers</h4>
+                            <p>Trusted partners who help us operate our Service (payment processors, hosting providers)</p>
+                        </div>
+                    </div>
+                    <div class="sharing-card">
+                        <div class="sharing-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="sharing-content">
+                            <h4>Legal Requirements</h4>
+                            <p>When required by law or to protect our rights and safety</p>
+                        </div>
+                    </div>
+                    <div class="sharing-card">
+                        <div class="sharing-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="sharing-content">
+                            <h4>Business Transfers</h4>
+                            <p>In connection with a merger, acquisition, or sale of assets</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <div class="warning-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="warning-content">
+                        <strong>Aggregated Data:</strong> We may share aggregated, non-personally identifiable information for analytical purposes.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section id="security" class="legal-section">
+            <h2>5. Data Security</h2>
+            <div class="section-content">
+                <p>We implement appropriate security measures to protect your personal information.</p>
+
+                <div class="security-features">
+                    <h3>5.1 Security Measures</h3>
+                    <div class="security-grid">
+                        <div class="security-item">
+                            <div class="security-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="security-text">
+                                <h4>Encryption</h4>
+                                <p>Data encrypted in transit and at rest</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="security-text">
+                                <h4>Access Controls</h4>
+                                <p>Limited access to personal data</p>
+                            </div>
+                        </div>
+                        <div class="security-item">
+                            <div class="security-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="security-text">
+                                <h4>Regular Audits</h4>
+                                <p>Security assessments and monitoring</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>5.2 Data Retention</h3>
+                <p>We retain your personal data only as long as necessary for the purposes outlined in this policy.</p>
+
+                <h3>5.3 Your Responsibility</h3>
+                <p>Please keep your account credentials secure and notify us immediately of any unauthorized use.</p>
+            </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section id="rights" class="legal-section">
+            <h2>6. Your Rights</h2>
+            <div class="section-content">
+                <p>You have several rights regarding your personal data:</p>
+
+                <div class="rights-grid">
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Access</h4>
+                            <p>Request a copy of your personal data</p>
+                        </div>
+                    </div>
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Correction</h4>
+                            <p>Update or correct inaccurate data</p>
+                        </div>
+                    </div>
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Deletion</h4>
+                            <p>Request deletion of your personal data</p>
+                        </div>
+                    </div>
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Objection</h4>
+                            <p>Object to certain data processing</p>
+                        </div>
+                    </div>
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Portability</h4>
+                            <p>Receive your data in a portable format</p>
+                        </div>
+                    </div>
+                    <div class="right-item">
+                        <div class="right-icon">
+                            <i class="fas fa-hand"></i>
+                        </div>
+                        <div class="right-text">
+                            <h4>Withdraw Consent</h4>
+                            <p>Withdraw consent at any time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>6.1 Exercising Your Rights</h3>
+                <p>You can exercise these rights through your account settings or by contacting us at privacy@sangabiz.com.</p>
+
+                <h3>6.2 Response Time</h3>
+                <p>We will respond to your request within 30 days.</p>
+            </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section id="cookies" class="legal-section">
+            <h2>7. Cookies and Tracking</h2>
+            <div class="section-content">
+                <p>We use cookies and similar technologies to enhance your experience.</p>
+
+                <div class="cookies-info">
+                    <h3>7.1 Types of Cookies</h3>
+                    <div class="cookie-types">
+                        <div class="cookie-type">
+                            <h4>Essential Cookies</h4>
+                            <p>Required for basic site functionality</p>
+                            <span class="cookie-required">Required</span>
+                        </div>
+                        <div class="cookie-type">
+                            <h4>Preference Cookies</h4>
+                            <p>Remember your settings and preferences</p>
+                            <span class="cookie-optional">Optional</span>
+                        </div>
+                        <div class="cookie-type">
+                            <h4>Analytics Cookies</h4>
+                            <p>Help us understand how you use our Service</p>
+                            <span class="cookie-optional">Optional</span>
+                        </div>
+                        <div class="cookie-type">
+                            <h4>Advertising Cookies</h4>
+                            <p>Deliver relevant advertisements</p>
+                            <span class="cookie-optional">Optional</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>7.2 Managing Cookies</h3>
+                <p>You can control cookies through your browser settings. However, disabling cookies may affect Service functionality.</p>
+
+                <div class="info-box">
+                    <div class="info-icon">
+                        <i class="fas fa-cookie-bite"></i>
+                    </div>
+                    <div class="info-content">
+                        <strong>Cookie Consent:</strong> When you first visit our Service, you can choose which cookies to accept.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section id="children" class="legal-section">
+            <h2>8. Children's Privacy</h2>
+            <div class="section-content">
+                <p>Our Service is not intended for children under 13 years of age.</p>
+
+                <div class="warning-box">
+                    <div class="warning-icon">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <div class="warning-content">
+                        <strong>Age Restriction:</strong> We do not knowingly collect personal information from children under 13. If you believe we have collected such information, please contact us immediately.
+                    </div>
+                </div>
+
+                <h3>8.1 Parental Controls</h3>
+                <p>Parents can contact us to review, update, or delete their child's information.</p>
+            </div>
+        </section>
+
+        <!-- Section 9 -->
+        <section id="international" class="legal-section">
+            <h2>9. International Data Transfers</h2>
+            <div class="section-content">
+                <p>Your information may be transferred to and processed in countries other than your own.</p>
+
+                <div class="transfer-info">
+                    <h3>9.1 Data Locations</h3>
+                    <p>We operate globally and may process data in various countries, including the United States and European Union.</p>
+
+                    <h3>9.2 Protection Measures</h3>
+                    <p>We ensure appropriate safeguards are in place for international data transfers, including:</p>
+                    <ul>
+                        <li>Standard contractual clauses</li>
+                        <li>Adequacy decisions</li>
+                        <li>Binding corporate rules</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10 -->
+        <section id="changes" class="legal-section">
+            <h2>10. Changes to This Policy</h2>
+            <div class="section-content">
+                <p>We may update this Privacy Policy from time to time.</p>
+
+                <h3>10.1 Notification</h3>
+                <p>We will notify you of material changes by email or through the Service at least 30 days before changes take effect.</p>
+
+                <h3>10.2 Continued Use</h3>
+                <p>Your continued use of the Service after changes constitutes acceptance of the updated policy.</p>
+
+                <h3>10.3 Reviewing Changes</h3>
+                <p>We encourage you to review this policy periodically for any changes.</p>
+            </div>
+        </section>
+
+        <!-- Section 11 -->
+        <section id="contact" class="legal-section">
+            <h2>11. Contact Us</h2>
+            <div class="section-content">
+                <p>If you have any questions about this Privacy Policy, please contact us:</p>
+
+                <div class="contact-grid">
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>privacy@sangabiz.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Address</h4>
+                            <p>123 Music Street<br>Digital City, DC 12345</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Data Protection Officer</h4>
+                            <p>dpo@sangabiz.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>11.1 Supervisory Authority</h3>
+                <p>You have the right to lodge a complaint with your local data protection authority.</p>
+            </div>
+        </section>
+
+        <!-- Acceptance Section -->
+        <div class="acceptance-section">
+            <div class="acceptance-content">
+                <h3>Your Privacy Matters</h3>
+                <p>We are committed to protecting your privacy and being transparent about how we handle your data.</p>
+                <div class="acceptance-buttons">
+                    <a href="{% url 'signup' %}" class="primary-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Continue to Sign Up
+                    </a>
+                    <a href="{% url 'home' %}" class="secondary-btn">
+                        <i class="fas fa-home"></i>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Privacy Policy Specific Styles */
+.legal-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.legal-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 3rem 0;
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(29, 185, 84, 0.05));
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.legal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.legal-header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--light), #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.legal-subtitle {
+    font-size: 1.2rem;
+    color: var(--gray);
+    margin-bottom: 2rem;
+}
+
+.legal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(29, 185, 84, 0.2);
+    border: 2px solid var(--primary);
+    border-radius: 50px;
+    color: var(--light);
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.legal-nav {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 3rem;
+    position: flex;
+    top: 100px;
+    z-index: 100;
+}
+
+.legal-nav h3 {
+    color: var(--light);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.nav-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: var(--gray);
+    text-decoration: none;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: rgba(29, 185, 84, 0.2);
+    border-color: var(--primary);
+    color: var(--light);
+    transform: translateY(-2px);
+}
+
+.legal-content {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legal-section {
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legal-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.legal-section h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--light);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--primary);
+    display: inline-block;
+}
+
+.section-content h3 {
+    font-size: 1.4rem;
+    color: var(--light);
+    margin: 2rem 0 1rem 0;
+}
+
+.section-content p {
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+}
+
+.section-content ul {
+    color: var(--gray);
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.section-content li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+/* Highlight Boxes */
+.highlight-box,
+.warning-box,
+.info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    border-left: 4px solid;
+}
+
+.highlight-box {
+    background: rgba(29, 185, 84, 0.1);
+    border-left-color: var(--primary);
+}
+
+.warning-box {
+    background: rgba(255, 193, 7, 0.1);
+    border-left-color: #ffc107;
+}
+
+.info-box {
+    background: rgba(23, 162, 184, 0.1);
+    border-left-color: #17a2b8;
+}
+
+.highlight-icon,
+.warning-icon,
+.info-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.highlight-icon { color: var(--primary); }
+.warning-icon { color: #ffc107; }
+.info-icon { color: #17a2b8; }
+
+.highlight-content,
+.warning-content,
+.info-content {
+    flex: 1;
+}
+
+.highlight-content strong,
+.warning-content strong,
+.info-content strong {
+    color: var(--light);
+}
+
+/* Feature List */
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    transition: var(--transition);
+}
+
+.feature-list li:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.feature-list i {
+    color: var(--primary);
+    width: 20px;
+    text-align: center;
+}
+
+/* Data Grid Styles */
+.data-grid,
+.usage-grid,
+.security-grid,
+.rights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.data-item,
+.usage-item,
+.security-item,
+.right-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-item:hover,
+.usage-item:hover,
+.security-item:hover,
+.right-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
+.data-icon,
+.usage-icon,
+.security-icon,
+.right-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.data-text h4,
+.usage-text h4,
+.security-text h4,
+.right-text h4 {
+    color: var(--light);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.data-text p,
+.usage-text p,
+.security-text p,
+.right-text p {
+    color: var(--gray);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Sharing Cards */
+.sharing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.sharing-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border-left: 4px solid var(--primary);
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sharing-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
+.sharing-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.sharing-content h4 {
+    color: var(--light);
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.sharing-content p {
+    color: var(--gray);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Cookie Types */
+.cookie-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.cookie-type {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 15px;
+    border-left: 4px solid;
+    position: relative;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cookie-type:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cookie-type:nth-child(1) { border-left-color: var(--primary); }
+.cookie-type:nth-child(2) { border-left-color: #17a2b8; }
+.cookie-type:nth-child(3) { border-left-color: #ffc107; }
+.cookie-type:nth-child(4) { border-left-color: #6f42c1; }
+
+.cookie-type h4 {
+    color: var(--light);
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.cookie-type p {
+    color: var(--gray);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.cookie-required,
+.cookie-optional {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cookie-required {
+    background: var(--primary);
+    color: white;
+}
+
+.cookie-optional {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--gray);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Contact Grid */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.contact-method {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contact-method:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    border-color: rgba(29, 185, 84, 0.3);
+}
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.contact-details h4 {
+    color: var(--light);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.contact-details p {
+    color: var(--gray);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Acceptance Section */
+.acceptance-section {
+    margin-top: 4rem;
+    padding: 3rem;
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(29, 185, 84, 0.05));
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid rgba(29, 185, 84, 0.2);
+}
+
+.acceptance-content h3 {
+    color: var(--light);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.acceptance-content p {
+    color: var(--gray);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.acceptance-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.primary-btn:hover {
+    background: transparent;
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-3px);
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Transfer Info */
+.transfer-info ul {
+    list-style: none;
+    margin: 1.5rem 0;
+}
+
+.transfer-info li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    color: var(--gray);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition);
+}
+
+.transfer-info li:hover {
+    color: var(--light);
+    padding-left: 0.5rem;
+}
+
+.transfer-info li:last-child {
+    border-bottom: none;
+}
+
+.transfer-info li::before {
+    content: '✓';
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .legal-container {
+        padding: 1rem;
+    }
+    
+    .legal-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .legal-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .data-grid,
+    .usage-grid,
+    .security-grid,
+    .rights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sharing-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .cookie-types {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        grid-template-columns: 1fr;
+    }
+    
+    .data-item,
+    .usage-item,
+    .security-item,
+    .right-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .sharing-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .contact-method {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .acceptance-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .legal-header {
+        padding: 2rem 1rem;
+    }
+    
+    .legal-header h1 {
+        font-size: 2rem;
+    }
+    
+    .legal-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    .legal-section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .cookie-type {
+        text-align: center;
+    }
+    
+    .highlight-box,
+    .warning-box,
+    .info-box {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .feature-list li {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+}
+
+/* Animation for sections */
+.legal-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.legal-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Print Styles */
+@media print {
+    .legal-nav,
+    .acceptance-section,
+    .primary-btn,
+    .secondary-btn {
+        display: none;
+    }
+    
+    .legal-container {
+        padding: 0;
+    }
+    
+    .legal-content {
+        border: none;
+        background: white;
+        color: black;
+    }
+    
+    .legal-header {
+        background: #f8f9fa !important;
+        color: black !important;
+    }
+    
+    h1, h2, h3, h4 {
+        color: black !important;
+    }
+    
+    p, li {
+        color: #333 !important;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for navigation links
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                const offsetTop = targetSection.offsetTop - 100;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Add active state to navigation links based on scroll position
+    const sections = document.querySelectorAll('.legal-section');
+    const navLinksArray = Array.from(navLinks);
+
+    function updateActiveNavLink() {
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 150;
+            const sectionHeight = section.clientHeight;
+            
+            if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                currentSection = '#' + section.getAttribute('id');
+            }
+        });
+
+        navLinksArray.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === currentSection) {
+                link.classList.add('active');
+                link.style.background = 'rgba(29, 185, 84, 0.2)';
+                link.style.borderColor = 'var(--primary)';
+                link.style.color = 'var(--light)';
+            }
+        });
+    }
+
+    // Update active link on scroll
+    window.addEventListener('scroll', updateActiveNavLink);
+    
+    // Initial update
+    updateActiveNavLink();
+
+    // Add fade-in animation to sections
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(section => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(section);
+    });
+
+    // Cookie consent simulation
+    const cookieBanner = document.createElement('div');
+    cookieBanner.innerHTML = `
+        <div class="cookie-banner">
+            <div class="cookie-content">
+                <h4><i class="fas fa-cookie-bite"></i> Cookie Preferences</h4>
+                <p>We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.</p>
+                <div class="cookie-buttons">
+                    <button class="cookie-accept">Accept All</button>
+                    <button class="cookie-settings">Manage Preferences</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add cookie banner styles
+    const cookieStyles = `
+        .cookie-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .cookie-content h4 {
+            color: var(--light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cookie-content p {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .cookie-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cookie-accept, .cookie-settings {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        .cookie-accept {
+            background: var(--primary);
+            color: white;
+        }
+        .cookie-settings {
+            background: rgba(255,255,255,0.1);
+            color: var(--light);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .cookie-accept:hover {
+            transform: translateY(-2px);
+        }
+        .cookie-settings:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        @media (max-width: 480px) {
+            .cookie-banner {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+            }
+            .cookie-buttons {
+                flex-direction: column;
+            }
+            .cookie-accept, .cookie-settings {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    `;
+
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = cookieStyles;
+    document.head.appendChild(styleSheet);
+
+    // Show cookie banner (commented out for now)
+    // document.body.appendChild(cookieBanner);
+
+    // Handle cookie banner interactions
+    cookieBanner.querySelector('.cookie-accept')?.addEventListener('click', function() {
+        cookieBanner.style.display = 'none';
+        localStorage.setItem('cookies-accepted', 'true');
+    });
+
+    cookieBanner.querySelector('.cookie-settings')?.addEventListener('click', function() {
+        alert('Cookie settings would open here. This is a demo implementation.');
+    });
+
+    // Check if user already accepted cookies
+    if (localStorage.getItem('cookies-accepted')) {
+        cookieBanner.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1415 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ artist.name }} - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="artist-details-container">
+    <!-- Artist Header Section -->
+    <div class="artist-header" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+        {% if artist.header_image %}url('{{ artist.header_image.url }}'){% else %}var(--dark){% endif %};">
+        <div class="artist-header-content">
+            <div class="artist-image-large">
+                {% if artist.image %}
+                    <img src="{{ artist.image.url }}" alt="{{ artist.name }}">
+                {% else %}
+                    <div class="artist-placeholder-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+                {% if artist.is_verified %}
+                <div class="verified-badge-large">
+                    <i class="fas fa-check"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="artist-info-header">
+                <p class="artist-type">ARTIST</p>
+                <h1 class="artist-name">{{ artist.name }}</h1>
+                <div class="artist-stats-header">
+                    <span class="followers-count">{{ followers_count }} followers</span>
+                    <span>•</span>
+                    <span>{{ songs_count }} songs</span>
+                    <span>•</span>
+                    <span>{{ total_plays }} total plays</span>
+                    {% if artist.genre %}
+                    <span>•</span>
+                    <span>{{ artist.genre.name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="artist-actions-header">
+            {% if user.is_authenticated and user != artist.user %}
+                <button class="follow-btn-large {% if is_following %}following{% endif %}" 
+                        data-artist-id="{{ artist.id }}"
+                        onclick="followArtist({{ artist.id }}, this)">
+                    <span class="btn-text">
+                        {% if is_following %}Following{% else %}Follow{% endif %}
+                    </span>
+                    <span class="loading-spinner" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+            {% endif %}
+            <button class="play-btn" onclick="playAllSongs()">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="more-options-btn">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="artist-main-content">
+        <!-- Popular Songs Section -->
+        <section class="popular-songs-section">
+            <h2 class="section-title">Popular</h2>
+            <div class="songs-list">
+                {% for song in songs|slice:":10" %}
+                <div class="song-item" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}">
+                    <div class="song-info">
+                        <div class="song-number">{{ forloop.counter }}</div>
+                        <div class="song-image">
+                            {% if song.cover_image %}
+                                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}">
+                            {% elif song.album.cover_image %}
+                                <img src="{{ song.album.cover_image.url }}" alt="{{ song.title }}">
+                            {% else %}
+                                <div class="song-placeholder">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="song-details">
+                            <h3 class="song-title">{{ song.title }}</h3>
+                            <p class="song-album">
+                                {% if song.album %}
+                                    {{ song.album.name }}
+                                {% else %}
+                                    Single
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="song-stats">
+                        <span class="play-count">
+                            <i class="fas fa-play"></i> 
+                            <span class="plays">{{ song.plays }}</span>
+                        </span>
+                        <span class="download-count">
+                            <i class="fas fa-download"></i> 
+                            <span class="downloads">{{ song.downloads }}</span>
+                        </span>
+                        <span class="song-duration">
+                            {% if song.duration %}
+                                {{ song.duration }}
+                            {% else %}
+                                3:00
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="song-actions">
+                        <button class="play-song-btn" onclick="playSongFromCard({{ song.id }})">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="download-btn" onclick="downloadSong({{ song.id }}, '{{ song.audio_file.url }}', '{{ song.title|escapejs }}', '{{ artist.name|escapejs }}', this)">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        {% if user.is_authenticated %}
+                        <button class="like-btn {% if song.is_liked %}liked{% endif %}" onclick="likeSong({{ song.id }}, this)">
+                            <i class="{% if song.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-songs">
+                    <i class="fas fa-music"></i>
+                    <h3>No songs available</h3>
+                    <p>This artist hasn't uploaded any songs yet</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if songs_count > 10 %}
+            <div class="show-more-songs">
+                <button class="show-more-btn" id="show-all-songs">
+                    Show all {{ songs_count }} songs
+                </button>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Albums Section -->
+        {% if artist.albums.all %}
+        <section class="albums-section">
+            <div class="section-header">
+                <h2 class="section-title">Albums</h2>
+                <a href="#" class="view-all-link">Show all</a>
+            </div>
+            <div class="albums-grid">
+                {% for album in artist.albums.all %}
+                <div class="album-card">
+                    <div class="album-image">
+                        {% if album.cover_image %}
+                            <img src="{{ album.cover_image.url }}" alt="{{ album.name }}">
+                        {% else %}
+                            <div class="album-placeholder">
+                                <i class="fas fa-compact-disc"></i>
+                            </div>
+                        {% endif %}
+                        <button class="play-album-btn" onclick="playAlbum({{ album.id }})">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="album-info">
+                        <h3 class="album-title">{{ album.name }}</h3>
+                        <p class="album-year">
+                            {% if album.release_date %}
+                                {{ album.release_date|date:"Y" }}
+                            {% else %}
+                                {{ album.created_at|date:"Y" }}
+                            {% endif %}
+                        </p>
+                        <p class="album-songs">{{ album.songs.count }} songs</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- About Section -->
+        <section class="about-section">
+            <h2 class="section-title">About</h2>
+            <div class="about-content">
+                {% if artist.bio %}
+                <div class="bio-section">
+                    <h3>Biography</h3>
+                    <p class="artist-bio">{{ artist.bio|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="stats-section">
+                    <h3>Stats</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ songs_count }}</span>
+                            <span class="stat-label">Songs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number followers-count">{{ followers_count }}</span>
+                            <span class="stat-label">Followers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ artist.albums.count }}</span>
+                            <span class="stat-label">Albums</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_plays }}</span>
+                            <span class="stat-label">Total Plays</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_downloads }}</span>
+                            <span class="stat-label">Total Downloads</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_likes }}</span>
+                            <span class="stat-label">Total Likes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if artist.genre %}
+                <div class="genre-section">
+                    <h3>Genre</h3>
+                    <div class="genre-tag">{{ artist.genre.name }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- All Songs Section (Hidden by default) -->
+        <section class="all-songs-section" id="all-songs-section" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title">All Songs</h2>
+                <button class="view-all-link" id="hide-all-songs">Show less</button>
+            </div>
+            <div class="songs-list" id="all-songs-list">
+                {% for song in songs %}
+                <div class="song-item" data-song-id="{{ song.id }}" data-audio-url="{{ song.audio_file.url }}">
+                    <div class="song-info">
+                        <div class="song-number">{{ forloop.counter }}</div>
+                        <div class="song-image">
+                            {% if song.cover_image %}
+                                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}">
+                            {% elif song.album.cover_image %}
+                                <img src="{{ song.album.cover_image.url }}" alt="{{ song.title }}">
+                            {% else %}
+                                <div class="song-placeholder">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="song-details">
+                            <h3 class="song-title">{{ song.title }}</h3>
+                            <p class="song-album">
+                                {% if song.album %}
+                                    {{ song.album.name }}
+                                {% else %}
+                                    Single
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="song-stats">
+                        <span class="play-count">
+                            <i class="fas fa-play"></i> 
+                            <span class="plays">{{ song.plays }}</span>
+                        </span>
+                        <span class="download-count">
+                            <i class="fas fa-download"></i> 
+                            <span class="downloads">{{ song.downloads }}</span>
+                        </span>
+                        <span class="song-duration">
+                            {% if song.duration %}
+                                {{ song.duration }}
+                            {% else %}
+                                3:00
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="song-actions">
+                        <button class="play-song-btn" onclick="playSongFromCard({{ song.id }})">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="download-btn" onclick="downloadSong({{ song.id }}, '{{ song.audio_file.url }}', '{{ song.title|escapejs }}', '{{ artist.name|escapejs }}', this)">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        {% if user.is_authenticated %}
+                        <button class="like-btn {% if song.is_liked %}liked{% endif %}" onclick="likeSong({{ song.id }}, this)">
+                            <i class="{% if song.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Similar Artists Section -->
+        {% comment %}
+        <!-- Remove similar artists section for now since it's not in your view -->
+        {% if similar_artists %}
+        <section class="similar-artists-section">
+            <h2 class="section-title">Fans also like</h2>
+            <div class="artists-grid">
+                {% for similar_artist in similar_artists %}
+                <div class="similar-artist-card" onclick="viewArtist({{ similar_artist.id }})">
+                    <div class="similar-artist-image">
+                        {% if similar_artist.image %}
+                            <img src="{{ similar_artist.image.url }}" alt="{{ similar_artist.name }}">
+                        {% else %}
+                            <div class="artist-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                        {% if similar_artist.is_verified %}
+                        <div class="verified-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        {% endif %}
+                        <button class="play-artist-btn" onclick="playArtist({{ similar_artist.id }}, event)">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="similar-artist-info">
+                        <h3>{{ similar_artist.name }}</h3>
+                        <p>{{ similar_artist.followers.count }} followers</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+        {% endcomment %}
+    </div>
+</div>
+
+<!-- CSRF Token for AJAX -->
+{% csrf_token %}
+
+<style>
+:root {
+    --primary: #1DB954;
+    --secondary: #1ed760;
+    --dark: #191414;
+    --light: #ffffff;
+    --gray: #b3b3b3;
+    --dark-gray: #535353;
+    --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+.artist-details-container {
+    color: var(--light);
+    background-color: var(--dark);
+    min-height: 100vh;
+}
+
+/* Artist Header Section */
+.artist-header {
+    padding: 60px 30px 30px;
+    display: flex;
+    flex-direction: column;
+    background-size: cover !important;
+    background-position: center !important;
+    position: relative;
+}
+
+.artist-header-content {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+.artist-image-large {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-right: 30px;
+    flex-shrink: 0;
+}
+
+.artist-image-large img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.artist-placeholder-large {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.verified-badge-large {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: var(--primary);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: white;
+    border: 3px solid var(--dark);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.artist-info-header {
+    flex: 1;
+}
+
+.artist-type {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.artist-name {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 0 0 15px 0;
+    line-height: 1;
+}
+
+.artist-stats-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.artist-actions-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.follow-btn-large {
+    padding: 10px 30px;
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.follow-btn-large.following {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.follow-btn-large:hover {
+    transform: scale(1.05);
+    border-color: white;
+}
+
+.play-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    color: black;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.play-btn:hover {
+    transform: scale(1.05);
+    background: var(--secondary);
+}
+
+.more-options-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.more-options-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Main Content */
+.artist-main-content {
+    padding: 30px;
+    background: linear-gradient(transparent, var(--dark) 100px);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Popular Songs Section */
+.songs-list {
+    margin-bottom: 20px;
+}
+
+.song-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.song-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.song-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.song-number {
+    width: 30px;
+    text-align: center;
+    color: var(--gray);
+    font-size: 1rem;
+}
+
+.song-image {
+    width: 40px;
+    height: 40px;
+    margin: 0 15px;
+}
+
+.song-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.song-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+}
+
+.song-details {
+    flex: 1;
+}
+
+.song-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.song-album {
+    margin: 5px 0 0 0;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.song-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-right: 15px;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.play-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.song-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.song-item:hover .song-actions {
+    opacity: 1;
+}
+
+.play-song-btn, .add-to-playlist-btn {
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.play-song-btn:hover, .add-to-playlist-btn:hover {
+    color: white;
+}
+
+.show-more-songs {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.show-more-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--gray);
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.show-more-btn:hover {
+    border-color: white;
+    color: white;
+}
+
+/* Albums Section */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.view-all-link {
+    color: var(--gray);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+.albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.album-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+.album-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.album-image {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.album-image img {
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.album-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray);
+    font-size: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.play-album-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    color: black;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.album-card:hover .play-album-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.play-album-btn:hover {
+    transform: scale(1.05);
+    background: var(--secondary);
+}
+
+.album-info {
+    text-align: left;
+}
+
+.album-title {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.album-year, .album-songs {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+/* About Section */
+.about-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.bio-section h3, .stats-section h3, .genre-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.artist-bio {
+    line-height: 1.6;
+    color: var(--gray);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 8px;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.genre-tag {
+    display: inline-block;
+    padding: 5px 15px;
+    background: var(--primary);
+    color: black;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+/* Similar Artists Section */
+.artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.similar-artist-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.similar-artist-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.similar-artist-image {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+}
+
+.similar-artist-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.play-artist-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    color: black;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+}
+
+.similar-artist-card:hover .play-artist-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.play-artist-btn:hover {
+    transform: scale(1.05);
+    background: var(--secondary);
+}
+
+.similar-artist-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.similar-artist-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.no-songs {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+}
+
+.no-songs i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.no-songs h3 {
+    margin-bottom: 10px;
+    color: var(--light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .artist-header {
+        padding: 30px 15px 20px;
+    }
+    
+    .artist-header-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .artist-image-large {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: 150px;
+        height: 150px;
+    }
+    
+    .artist-name {
+        font-size: 2.5rem;
+    }
+    
+    .artist-main-content {
+        padding: 20px 15px;
+    }
+    
+    .about-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .albums-grid, .artists-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+    
+    .song-stats {
+        display: none;
+    }
+    
+    .song-actions {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .artist-name {
+        font-size: 2rem;
+    }
+    
+    .albums-grid, .artists-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.download-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading states */
+.follow-btn-large.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.download-btn.downloading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.like-btn.liked i {
+    color: var(--primary) !important;
+}
+
+/* Song item hover effects */
+.song-item.playing {
+    background-color: rgba(29, 185, 84, 0.1);
+    border-left: 3px solid var(--primary);
+}
+
+.song-item.playing .song-title {
+    color: var(--primary);
+}
+</style>
+
+<script>
+// Artist page specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    initializeArtistPage();
+});
+
+function initializeArtistPage() {
+    console.log('🎵 Initializing artist page...');
+    
+    // Show/hide all songs
+    const showAllSongsBtn = document.getElementById('show-all-songs');
+    const hideAllSongsBtn = document.getElementById('hide-all-songs');
+    const allSongsSection = document.getElementById('all-songs-section');
+    const popularSongsSection = document.querySelector('.popular-songs-section');
+
+    if (showAllSongsBtn) {
+        showAllSongsBtn.addEventListener('click', function() {
+            allSongsSection.style.display = 'block';
+            popularSongsSection.style.display = 'none';
+        });
+    }
+
+    if (hideAllSongsBtn) {
+        hideAllSongsBtn.addEventListener('click', function() {
+            allSongsSection.style.display = 'none';
+            popularSongsSection.style.display = 'block';
+        });
+    }
+}
+
+// ===== ARTIST FUNCTIONS =====
+function followArtist(artistId, button) {
+    console.log('👤 Following artist:', artistId);
+    
+    const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+    
+    if (!isAuthenticated) {
+        showNotification('Please login to follow artists', 'info');
+        return;
+    }
+
+    const btnText = button.querySelector('.btn-text');
+    const loadingSpinner = button.querySelector('.loading-spinner');
+    
+    // Show loading state
+    btnText.style.display = 'none';
+    loadingSpinner.style.display = 'inline-block';
+    button.classList.add('loading');
+    button.disabled = true;
+
+    fetch(`/api/artists/${artistId}/follow/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('👤 Follow response:', data);
+        if (data.success) {
+            if (data.followed) {
+                button.classList.add('following');
+                btnText.textContent = 'Following';
+                showNotification(`Now following ${data.artist_name || 'artist'}!`, 'success');
+            } else {
+                button.classList.remove('following');
+                btnText.textContent = 'Follow';
+                showNotification(`Unfollowed ${data.artist_name || 'artist'}`, 'info');
+            }
+            
+            // Update followers count everywhere
+            updateFollowersCount(data.followers_count);
+        } else {
+            showNotification(data.error || 'Error following artist', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Follow error:', error);
+        showNotification('Error following artist', 'error');
+    })
+    .finally(() => {
+        // Hide loading state
+        btnText.style.display = 'inline-block';
+        loadingSpinner.style.display = 'none';
+        button.classList.remove('loading');
+        button.disabled = false;
+    });
+}
+
+function updateFollowersCount(newCount) {
+    // Update in header
+    const headerFollowers = document.querySelector('.artist-stats-header .followers-count');
+    if (headerFollowers) {
+        headerFollowers.textContent = `${newCount} followers`;
+    }
+    
+    // Update in stats section
+    const statsFollowers = document.querySelector('.stats-section .followers-count');
+    if (statsFollowers) {
+        statsFollowers.textContent = newCount;
+    }
+}
+
+// ===== SONG PLAYBACK FUNCTIONS =====
+function playAllSongs() {
+    console.log('🎵 Playing all songs by artist');
+    
+    const songElements = document.querySelectorAll('.song-item');
+    const songs = Array.from(songElements).map(element => {
+        return {
+            id: parseInt(element.dataset.songId),
+            title: element.querySelector('.song-title').textContent,
+            artist: '{{ artist.name|escapejs }}',
+            audio: element.dataset.audioUrl,
+            cover: element.querySelector('.song-image img')?.src || '{% static "images/default-cover.jpg" %}'
+        };
+    });
+
+    if (songs.length > 0 && typeof window.playSong === 'function') {
+        window.playSong(songs[0], songs, 0);
+        showNotification(`Playing all songs by {{ artist.name|escapejs }}`, 'success');
+    } else {
+        showNotification('No songs available to play', 'error');
+    }
+}
+
+function playSongFromCard(songId) {
+    console.log('🎵 Playing song from artist page:', songId);
+    
+    const songElement = document.querySelector(`[data-song-id="${songId}"]`);
+    if (!songElement) {
+        console.error('Song element not found');
+        return;
+    }
+
+    const songData = {
+        id: songId,
+        title: songElement.querySelector('.song-title').textContent,
+        artist: '{{ artist.name|escapejs }}',
+        audio: songElement.dataset.audioUrl,
+        cover: songElement.querySelector('.song-image img')?.src || '{% static "images/default-cover.jpg" %}'
+    };
+
+    // Get all songs for playlist
+    const allSongElements = document.querySelectorAll('.song-item');
+    const playlist = Array.from(allSongElements).map(element => ({
+        id: parseInt(element.dataset.songId),
+        title: element.querySelector('.song-title').textContent,
+        artist: '{{ artist.name|escapejs }}',
+        audio: element.dataset.audioUrl,
+        cover: element.querySelector('.song-image img')?.src || '{% static "images/default-cover.jpg" %}'
+    }));
+
+    const songIndex = playlist.findIndex(song => song.id === songId);
+
+    if (typeof window.playSong === 'function') {
+        window.playSong(songData, playlist, songIndex);
+        
+        // Track play count
+        trackSongPlay(songId)
+            .then(data => {
+                if (data.success) {
+                    updatePlayCountUI(songId, data.play_count);
+                }
+            })
+            .catch(error => {
+                console.error('Play count tracking error:', error);
+            });
+            
+        // Visual feedback
+        highlightPlayingSong(songId);
+    } else {
+        console.error('Global playSong function not available');
+        showNotification('Music player not available', 'error');
+    }
+}
+
+function highlightPlayingSong(songId) {
+    // Remove playing class from all songs
+    document.querySelectorAll('.song-item').forEach(item => {
+        item.classList.remove('playing');
+    });
+    
+    // Add playing class to current song
+    const currentSongElement = document.querySelector(`[data-song-id="${songId}"]`);
+    if (currentSongElement) {
+        currentSongElement.classList.add('playing');
+    }
+}
+
+function playAlbum(albumId) {
+    console.log('🎵 Playing album:', albumId);
+    showNotification('Album playback starting...', 'info');
+    // Implement album playback logic here
+}
+
+function playArtist(artistId, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    console.log('🎵 Playing artist:', artistId);
+    showNotification('Playing artist...', 'info');
+    // Implement artist playback logic here
+}
+
+// ===== DOWNLOAD FUNCTION =====
+function downloadSong(songId, songUrl, songTitle, artistName, buttonElement) {
+    console.log('📥 Downloading song:', songId);
+    
+    const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+    
+    if (!isAuthenticated) {
+        showNotification('Please login to download songs', 'info');
+        return;
+    }
+
+    if (buttonElement) {
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        buttonElement.classList.add('downloading');
+    }
+
+    // Track download first
+    trackSongDownload(songId)
+        .then(data => {
+            if (data.success) {
+                console.log('✅ Download tracked successfully');
+                updateDownloadCountUI(songId, data.download_count);
+                
+                // Then trigger actual download
+                if (typeof window.downloadSong === 'function') {
+                    window.downloadSong(songId, songUrl, songTitle, artistName, buttonElement);
+                } else {
+                    // Fallback download
+                    const link = document.createElement('a');
+                    link.href = songUrl;
+                    link.download = `${songTitle} - ${artistName}.mp3`;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+                
+                showNotification(`Downloading: ${songTitle}`, 'success');
+            } else {
+                showNotification('Download tracking failed: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Download tracking error:', error);
+            showNotification('Download error occurred', 'error');
+        })
+        .finally(() => {
+            if (buttonElement) {
+                setTimeout(() => {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = '<i class="fas fa-download"></i>';
+                    buttonElement.classList.remove('downloading');
+                }, 2000);
+            }
+        });
+}
+
+// ===== TRACKING FUNCTIONS =====
+function trackSongPlay(songId) {
+    return fetch('/api/track-play/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            song_id: songId,
+            timestamp: new Date().toISOString(),
+            duration_played: 0,
+            source: 'artist_page'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    });
+}
+
+function trackSongDownload(songId) {
+    return fetch('/api/track-download/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            song_id: songId,
+            timestamp: new Date().toISOString()
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    });
+}
+
+// ===== UI UPDATE FUNCTIONS =====
+function updatePlayCountUI(songId, newPlayCount) {
+    const playElements = document.querySelectorAll(`[data-song-id="${songId}"] .plays`);
+    playElements.forEach(element => {
+        element.textContent = newPlayCount;
+        
+        // Animation
+        element.style.transform = 'scale(1.2)';
+        element.style.color = 'var(--primary)';
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.color = '';
+        }, 300);
+    });
+}
+
+function updateDownloadCountUI(songId, newDownloadCount) {
+    const downloadElements = document.querySelectorAll(`[data-song-id="${songId}"] .downloads`);
+    downloadElements.forEach(element => {
+        element.textContent = newDownloadCount;
+        
+        // Animation
+        element.style.transform = 'scale(1.2)';
+        element.style.color = 'var(--success)';
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.color = '';
+        }, 300);
+    });
+}
+
+// ===== UTILITY FUNCTIONS =====
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type = 'info') {
+    if (typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
+    } else {
+        // Fallback notification
+        console.log(`📢 ${type.toUpperCase()}: ${message}`);
+    }
+}
+
+function viewArtist(artistId) {
+    window.location.href = `/artists/${artistId}/`;
+}
+
+// Make functions available globally
+window.playSongFromCard = playSongFromCard;
+window.downloadSong = downloadSong;
+window.followArtist = followArtist;
+window.playAllSongs = playAllSongs;
+
+console.log('✅ Artist page JavaScript loaded successfully!');
+</script>
+ {% endblock %}
+

@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Account Settings - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h1>Account Settings</h1>
+        <p>Manage your account preferences and profile information</p>
+    </div>
+
+    <div class="settings-container">
+        <div class="settings-grid">
+            <!-- Profile Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i>
+                    Profile Information
+                </h2>
+                <div class="settings-card">
+                    <form method="post" class="settings-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="profile">
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="{{ user.username }}" class="form-input" readonly>
+                            <small class="form-help">Username cannot be changed</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="form-input">
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">
+                            <i class="fas fa-save"></i>
+                            Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Password Change -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-lock"></i>
+                    Change Password
+                </h2>
+                <div class="settings-card">
+                    <form method="post" class="settings-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="password">
+                        
+                        <div class="form-group">
+                            <label for="old_password">Current Password</label>
+                            <input type="password" id="old_password" name="old_password" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new_password1">New Password</label>
+                            <input type="password" id="new_password1" name="new_password1" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new_password2">Confirm New Password</label>
+                            <input type="password" id="new_password2" name="new_password2" class="form-input" required>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">
+                            <i class="fas fa-key"></i>
+                            Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Preferences -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Preferences
+                </h2>
+                <div class="settings-card">
+                    <form method="post" class="settings-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="preferences">
+                        
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="email_notifications" name="email_notifications" {% if user.profile.email_notifications %}checked{% endif %}>
+                            <label for="email_notifications">Email Notifications</label>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="newsletter" name="newsletter" {% if user.profile.newsletter %}checked{% endif %}>
+                            <label for="newsletter">Newsletter Subscription</label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="theme">Theme Preference</label>
+                            <select id="theme" name="theme" class="form-input">
+                                <option value="dark" {% if user.profile.theme == 'dark' %}selected{% endif %}>Dark</option>
+                                <option value="light" {% if user.profile.theme == 'light' %}selected{% endif %}>Light</option>
+                                <option value="auto" {% if user.profile.theme == 'auto' %}selected{% endif %}>Auto</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="primary-btn">
+                            <i class="fas fa-save"></i>
+                            Save Preferences
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Type -->
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-crown"></i>
+                    Account Type
+                </h2>
+                <div class="settings-card">
+                    <div class="account-type-info">
+                        <div class="account-type-badge {% if user.is_artist %}artist-badge{% else %}listener-badge{% endif %}">
+                            <i class="fas {% if user.is_artist %}fa-microphone{% else %}fa-headphones{% endif %}"></i>
+                            {{ user.is_artist|yesno:"Artist Account,Listener Account" }}
+                        </div>
+                        
+                        {% if not user.is_artist %}
+                        <div class="upgrade-section">
+                            <h3>Become an Artist</h3>
+                            <p>Upload your music and share it with the world</p>
+                            <a href="{% url 'become_artist' %}" class="primary-btn">
+                                <i class="fas fa-microphone"></i>
+                                Upgrade to Artist
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="artist-features">
+                            <h3>Artist Features</h3>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Upload unlimited music</li>
+                                <li><i class="fas fa-check"></i> Access to analytics</li>
+                                <li><i class="fas fa-check"></i> Custom artist profile</li>
+                                <li><i class="fas fa-check"></i> Monetization options</li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .settings-section {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 0;
+        border: 1px solid rgba(255,255,255,0.1);
+        overflow: hidden;
+    }
+
+    .settings-section .section-title {
+        background: rgba(255,255,255,0.05);
+        padding: 20px;
+        margin: 0;
+        font-size: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .settings-card {
+        padding: 25px;
+    }
+
+    .settings-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--light);
+        font-size: 14px;
+    }
+
+    .form-input {
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.05);
+        color: var(--light);
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(255,255,255,0.08);
+    }
+
+    .form-input:read-only {
+        background: rgba(255,255,255,0.02);
+        color: var(--gray);
+        cursor: not-allowed;
+    }
+
+    .form-help {
+        font-size: 12px;
+        color: var(--gray);
+        margin-top: 4px;
+    }
+
+    .checkbox-group {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .account-type-info {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .account-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .artist-badge {
+        background: linear-gradient(135deg, var(--primary), #1ed760);
+        color: var(--dark);
+    }
+
+    .listener-badge {
+        background: linear-gradient(135deg, #7289da, #5b6eae);
+        color: var(--light);
+    }
+
+    .upgrade-section, .artist-features {
+        margin-top: 20px;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .upgrade-section h3, .artist-features h3 {
+        margin-bottom: 10px;
+        color: var(--light);
+    }
+
+    .upgrade-section p {
+        color: var(--gray);
+        margin-bottom: 15px;
+    }
+
+    .artist-features ul {
+        list-style: none;
+        text-align: left;
+    }
+
+    .artist-features li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        color: var(--light);
+    }
+
+    .artist-features li i {
+        color: var(--primary);
+    }
+
+    .primary-btn {
+        background: var(--primary);
+        color: var(--dark);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .primary-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .settings-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .settings-card {
+            padding: 20px;
+        }
+
+        .settings-section .section-title {
+            padding: 15px;
+            font-size: 18px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% load static %}
+<style>
+    footer {
+        background: #000000;
+        padding: 60px 0 30px;
+        margin-top: 80px;
+        border-top: 1px solid #282828;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 60px;
+        margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #ffffff;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .footer-column ul {
+        list-style: none;
+    }
+
+    .footer-column ul li {
+        margin-bottom: 12px;
+    }
+
+    .footer-column ul li a {
+        color: #b3b3b3;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer-column ul li a:hover {
+        color: #ffffff;
+        transform: translateX(5px);
+    }
+
+    .footer-column p {
+        color: #b3b3b3;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-links a {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #282828;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .social-links a:hover {
+        background: #1DB954;
+        transform: translateY(-2px);
+    }
+
+    .copyright {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid #282828;
+        color: #b3b3b3;
+        font-size: 12px;
+    }
+
+    .built-by {
+        margin-top: 10px;
+        font-size: 11px;
+        opacity: 0.7;
+    }
+
+    .built-by a {
+        color: #1DB954;
+        text-decoration: none;
+    }
+
+    .built-by a:hover {
+        text-decoration: underline;
+    }
+
+    /* Enhanced Contact Links in Footer */
+    .footer-column.artist-support ul li {
+        margin-bottom: 15px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-column.artist-support ul li:last-child {
+        border-bottom: none;
+    }
+
+    .footer-column.artist-support ul li strong {
+        color: #ffffff;
+        display: block;
+        margin: 15px 0 8px 0;
+        font-size: 14px;
+    }
+
+    .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #b3b3b3;
+        border: 1px solid transparent;
+    }
+
+    .contact-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+
+    .contact-link.whatsapp:hover {
+        color: #25D366;
+        border-color: rgba(37, 211, 102, 0.3);
+    }
+
+    .contact-link.email:hover {
+        color: #EA4335;
+        border-color: rgba(234, 67, 53, 0.3);
+    }
+
+    .contact-link i {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .footer-content {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+    }
+</style>
+
+<!-- Footer -->
+<footer>
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 32px;">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Sangabiz</h3>
+                <p>Your ultimate destination for music streaming and downloads. Enjoy millions of songs and create your perfect playlists.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Explore</h3>
+                <ul>
+                    <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'discover' %}"><i class="fas fa-search"></i> Discover</a></li>
+                    <li><a href="{% url 'library' %}"><i class="fas fa-book"></i> Library</a></li>
+                    <li><a href="{% url 'playlists' %}"><i class="fas fa-list"></i> Playlists</a></li>
+                    <li><a href="{% url 'genres' %}"><i class="fas fa-compass"></i> Genres</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="{% url 'settings' %}"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="{% url 'premium_pricing' %}"><i class="fas fa-crown"></i> Upgrade to Premium</a></li>
+                    <li><a href="{% url 'help_center' %}"><i class="fas fa-question-circle"></i> Help Center</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="footer-column artist-support">
+                <h3>Artist Support</h3>
+                <ul>
+                    <li><a href="{% url 'upload_music' %}"><i class="fas fa-cloud-upload-alt"></i> Upload Music</a></li>
+                    <li><a href="{% url 'my_uploads' %}"><i class="fas fa-list"></i> My Uploads</a></li>
+                    <li><strong>Need Help Uploading?</strong></li>
+                    <li>
+                        <a href="https://wa.me/256766670007?text=Hello%20Sangabiz%20Team,%20I%20need%20help%20uploading%20my%20music" 
+                           target="_blank" 
+                           class="contact-link whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            WhatsApp: +256 7666 70007
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:sangaben07@gmail.com?subject=Music%20Upload%20Support%20-%20Sangabiz&body=Hello%20Sangabiz%20Team,%0A%0AI%20need%20assistance%20with%20uploading%20my%20music.%0A%0AThank%20you." 
+                           class="contact-link email">
+                            <i class="fas fa-envelope"></i>
+                            Email: sangaben07@gmail.com
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Sangabiz. All rights reserved.</p>
+            <div class="built-by">
+                <p>Built with ❤️ by <a href="https://sangaben.onrender.com" target="_blank">Sanga Ben</a></p>
+                <p>Powered by Sangabiz Music Platform</p>
+            </div>
+        </div>
+    </div>
+</footer>

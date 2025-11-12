@@ -1,0 +1,1569 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Artist Dashboard - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="artist-dashboard">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="artist-info">
+                <div class="artist-avatar">
+                    {% if artist.image %}
+                        <img src="{{ artist.image.url }}" alt="{{ artist.name }}">
+                    {% else %}
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    {% if artist.is_verified %}
+                    <div class="verified-badge">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="artist-details">
+                    <h1>{{ artist.name }}</h1>
+                    <p class="artist-genre">
+                        <i class="fas fa-music"></i>
+                        {{ artist.genre.name|default:"No genre set" }}
+                    </p>
+                    <p class="artist-bio">{{ artist.bio|default:"Tell your story..." }}</p>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_plays|intcomma }}</h3>
+                        <p>Total Plays</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_downloads|intcomma }}</h3>
+                        <p>Downloads</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_likes|intcomma }}</h3>
+                        <p>Likes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>${{ total_earnings|floatformat:2 }}</h3>
+                        <p>Total Earnings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{% url 'upload_music' %}" class="action-btn primary">
+            <i class="fas fa-upload"></i>
+            Upload Song
+        </a>
+        <a href="{% url 'artist_analytics' artist.id %}" class="action-btn secondary">
+            <i class="fas fa-chart-line"></i>
+            View Analytics
+        </a>
+        <a href="{% url 'edit_artist_profile' %}" class="action-btn secondary">
+            <i class="fas fa-edit"></i>
+            Edit Profile
+        </a>
+        <button class="action-btn secondary" onclick="shareProfile()">
+            <i class="fas fa-share-alt"></i>
+            Share Profile
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <!-- Earnings Summary -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Earnings Summary</h2>
+                <a href="{% url 'earnings_details' %}" class="view-all-btn">
+                    View Details <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="earnings-grid">
+                <div class="earning-card">
+                    <div class="earning-icon plays">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="earning-info">
+                        <h4>Stream Revenue</h4>
+                        <p class="earning-amount">${{ stream_earnings|floatformat:2 }}</p>
+                        <p class="earning-detail">{{ total_plays|intcomma }} plays × $0.001/play</p>
+                    </div>
+                </div>
+                <div class="earning-card">
+                    <div class="earning-icon downloads">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="earning-info">
+                        <h4>Download Revenue</h4>
+                        <p class="earning-amount">${{ download_earnings|floatformat:2 }}</p>
+                        <p class="earning-detail">{{ total_downloads|intcomma }} downloads × $0.003/download</p>
+                    </div>
+                </div>
+                <div class="earning-card">
+                    <div class="earning-icon total">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="earning-info">
+                        <h4>Available Balance</h4>
+                        <p class="earning-amount">${{ available_balance|floatformat:2 }}</p>
+                        <p class="earning-detail">Ready for withdrawal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Songs List Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Your Songs</h2>
+                <a href="{% url 'my_uploads' %}" class="view-all-btn">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="songs-list-header">
+                <div class="song-header-info">#</div>
+                <div class="song-header-title">TITLE</div>
+                <div class="song-header-plays">PLAYS</div>
+                <div class="song-header-downloads">DOWNLOADS</div>
+                <div class="song-header-earnings">EARNINGS</div>
+                <div class="song-header-status">STATUS</div>
+                <div class="song-header-actions">ACTIONS</div>
+            </div>
+
+            <div class="songs-list">
+                {% for song in recent_songs %}
+                <div class="song-list-item" data-song-id="{{ song.id }}">
+                    <div class="song-index">
+                        <span class="number">{{ forloop.counter }}</span>
+                        <button class="play-btn" onclick="playSong({{ song.id }})" data-song-id="{{ song.id }}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="song-info">
+                        <div class="song-cover">
+                            {% if song.cover_image %}
+                                <img src="{{ song.cover_image.url }}" alt="{{ song.title }}">
+                            {% else %}
+                                <div class="cover-placeholder">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="song-details">
+                            <h4 class="song-title">{{ song.title }}</h4>
+                            <p class="song-artist">{{ artist.name }}</p>
+                        </div>
+                    </div>
+                    <div class="song-plays">
+                        {{ song.plays|intcomma }}
+                    </div>
+                    <div class="song-downloads">
+                        {{ song.downloads|intcomma }}
+                    </div>
+                    <div class="song-earnings">
+                        ${{ song.earnings|floatformat:2 }}
+                    </div>
+                    <div class="song-status">
+                        {% if song.is_approved %}
+                        <span class="status approved">Approved</span>
+                        {% else %}
+                        <span class="status pending">Pending</span>
+                        {% endif %}
+                    </div>
+                    <div class="song-actions">
+                        <button class="action-btn" onclick="editSong({{ song.id }})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn" onclick="shareSong({{ song.id }})" title="Share">
+                            <i class="fas fa-share"></i>
+                        </button>
+                        <button class="action-btn" onclick="downloadSong({{ song.id }})" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <h3>No songs uploaded yet</h3>
+                    <p>Start your journey by uploading your first song</p>
+                    <a href="{% url 'upload_music' %}" class="upload-cta">
+                        Upload Your First Song
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Analytics & Stats Section -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Performance Analytics</h2>
+                <div class="time-filter">
+                    <select id="timeRange">
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d" selected>Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                        <option value="1y">Last Year</option>
+                    </select>
+                </div>
+            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h4>Plays Over Time</h4>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>Plays chart will appear here</p>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <h4>Top Performing Songs</h4>
+                    <div class="top-songs-list">
+                        {% for song in top_songs %}
+                        <div class="top-song-item">
+                            <span class="rank">{{ forloop.counter }}</span>
+                            <div class="song-details">
+                                <strong>{{ song.title }}</strong>
+                                <span>{{ song.plays|intcomma }} plays • ${{ song.earnings|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="no-data">No song data available</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audio Player -->
+<div id="audioPlayer" class="audio-player">
+    <div class="player-content">
+        <div class="player-info">
+            <div class="player-cover">
+                <img id="playerCover" src="" alt="Now Playing">
+            </div>
+            <div class="player-details">
+                <h4 id="playerTitle">No song selected</h4>
+                <p id="playerArtist">Select a song to play</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="control-btn" onclick="previousSong()">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <button class="control-btn play-pause" onclick="togglePlayPause()">
+                <i class="fas fa-play" id="playPauseIcon"></i>
+            </button>
+            <button class="control-btn" onclick="nextSong()">
+                <i class="fas fa-step-forward"></i>
+            </button>
+        </div>
+        <div class="player-progress">
+            <span id="currentTime">0:00</span>
+            <div class="progress-bar" onclick="seekAudio(event)">
+                <div class="progress" id="progress"></div>
+            </div>
+            <span id="duration">0:00</span>
+        </div>
+        <div class="player-volume">
+            <i class="fas fa-volume-up"></i>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50" onchange="setVolume(this.value)">
+        </div>
+    </div>
+</div>
+
+<!-- Success Message Toast -->
+<div id="successToast" class="toast">
+    <div class="toast-content">
+        <i class="fas fa-check-circle"></i>
+        <span class="toast-message">Song uploaded successfully!</span>
+    </div>
+</div>
+
+<style>
+.artist-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
+    color: white;
+    padding-bottom: 100px; /* Space for audio player */
+}
+
+/* Header Styles */
+.dashboard-header {
+    background: linear-gradient(135deg, rgba(30, 215, 96, 0.9), rgba(46, 204, 113, 0.8));
+    padding: 40px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background-size: cover;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.artist-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.artist-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.artist-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.verified-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #1ed760;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.artist-details h1 {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.artist-genre {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 5px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.artist-bio {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 400px;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.header-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    min-width: 120px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #1ed760;
+}
+
+.stat-info h3 {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Quick Actions */
+.quick-actions {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+}
+
+.action-btn.primary {
+    background: #1ed760;
+    color: white;
+}
+
+.action-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn.primary:hover {
+    background: #1db954;
+}
+
+.action-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Content Sections */
+.dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: grid;
+    gap: 30px;
+}
+
+.content-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #1ed760;
+    font-weight: 700;
+}
+
+.view-all-btn {
+    background: none;
+    border: none;
+    color: #1ed760;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    color: #1db954;
+    transform: translateX(3px);
+}
+
+/* Earnings Grid */
+.earnings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.earning-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.earning-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.earning-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.earning-icon.plays {
+    background: rgba(30, 215, 96, 0.2);
+    color: #1ed760;
+}
+
+.earning-icon.downloads {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.earning-icon.total {
+    background: rgba(39, 174, 96, 0.2);
+    color: #27ae60;
+}
+
+.earning-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.earning-amount {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1ed760;
+}
+
+.earning-detail {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 5px 0 0 0;
+}
+
+/* Songs List Styles */
+.songs-list-header {
+    display: grid;
+    grid-template-columns: 50px 2fr 1fr 1fr 1fr 1fr 100px;
+    gap: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.songs-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.song-list-item {
+    display: grid;
+    grid-template-columns: 50px 2fr 1fr 1fr 1fr 1fr 100px;
+    gap: 15px;
+    padding: 15px 20px;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.song-list-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.song-index {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.song-index .number {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.song-index .play-btn {
+    position: absolute;
+    background: none;
+    border: none;
+    color: #1ed760;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.song-list-item:hover .number {
+    opacity: 0;
+}
+
+.song-list-item:hover .play-btn {
+    opacity: 1;
+}
+
+.song-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.song-cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.song-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cover-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1ed760, #1db954);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.song-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.song-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.song-artist {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.song-plays,
+.song-downloads,
+.song-earnings {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.song-earnings {
+    color: #1ed760;
+    font-weight: 600;
+}
+
+.song-status {
+    display: flex;
+    gap: 5px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status.approved {
+    background: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.status.pending {
+    background: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+.song-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.song-actions .action-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.song-actions .action-btn:hover {
+    background: rgba(30, 215, 96, 0.2);
+    color: #1ed760;
+    transform: scale(1.1);
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #1ed760;
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+    color: white;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    margin: 0 0 20px 0;
+}
+
+.upload-cta {
+    background: #1ed760;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.upload-cta:hover {
+    background: #1db954;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 215, 96, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Analytics */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.analytics-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-card h4 {
+    margin: 0 0 15px 0;
+    color: #1ed760;
+    font-weight: 600;
+}
+
+.chart-placeholder {
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.chart-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.top-songs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.top-song-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.top-song-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.rank {
+    background: #1ed760;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.song-details {
+    flex: 1;
+}
+
+.song-details strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.song-details span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.no-data {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Audio Player */
+.audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(30, 215, 96, 0.3);
+    padding: 15px 20px;
+    display: none;
+    z-index: 1000;
+}
+
+.audio-player.active {
+    display: block;
+}
+
+.player-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.player-cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.player-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.player-details h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+}
+
+.player-details p {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.player-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #1ed760;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: rgba(30, 215, 96, 0.2);
+    transform: scale(1.1);
+}
+
+.play-pause {
+    background: #1ed760;
+    color: white;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-pause:hover {
+    background: #1db954;
+}
+
+.player-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 2;
+}
+
+.player-progress span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    min-width: 35px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+}
+
+.progress {
+    height: 100%;
+    background: #1ed760;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.player-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.player-volume i {
+    color: #1ed760;
+    font-size: 1rem;
+}
+
+#volumeSlider {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#volumeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1ed760;
+    cursor: pointer;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2ecc71;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: none;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .songs-list-header,
+    .song-list-item {
+        grid-template-columns: 40px 2fr 1fr 1fr 1fr 80px;
+    }
+    
+    .song-header-downloads,
+    .song-downloads {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .header-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .quick-actions {
+        justify-content: center;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .songs-list-header,
+    .song-list-item {
+        grid-template-columns: 40px 2fr 1fr 1fr 60px;
+    }
+    
+    .song-header-earnings,
+    .song-earnings {
+        display: none;
+    }
+
+    .artist-details h1 {
+        font-size: 2rem;
+    }
+
+    .earnings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .player-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .player-progress {
+        order: -1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-section {
+        padding: 20px;
+    }
+
+    .header-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .artist-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .songs-list-header,
+    .song-list-item {
+        grid-template-columns: 30px 2fr 1fr 40px;
+    }
+    
+    .song-header-plays,
+    .song-plays,
+    .song-header-status,
+    .song-status {
+        display: none;
+    }
+
+    .song-info {
+        gap: 8px;
+    }
+
+    .song-cover {
+        width: 35px;
+        height: 35px;
+    }
+
+    .song-title {
+        font-size: 0.9rem;
+    }
+
+    .song-artist {
+        font-size: 0.75rem;
+    }
+}
+</style>
+
+<script>
+// Audio player variables
+let currentAudio = null;
+let isPlaying = false;
+let currentSongId = null;
+let currentPlayId = null;
+let songsQueue = [];
+
+// Initialize songs queue from the page
+function initializeSongsQueue() {
+    songsQueue = Array.from(document.querySelectorAll('.song-list-item')).map(item => ({
+        id: item.dataset.songId,
+        title: item.querySelector('.song-title').textContent,
+        artist: item.querySelector('.song-artist').textContent,
+        cover: item.querySelector('.song-cover img') ? item.querySelector('.song-cover img').src : '',
+        audioUrl: '' // Will be set when playing
+    }));
+}
+
+// Play song function
+async function playSong(songId) {
+    try {
+        // Stop current audio if playing
+        if (currentAudio) {
+            currentAudio.pause();
+            if (currentPlayId) {
+                await updatePlayDuration(currentPlayId, currentAudio.currentTime);
+            }
+        }
+
+        // Show loading state
+        const playBtn = document.querySelector(`.play-btn[data-song-id="${songId}"]`);
+        if (playBtn) {
+            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        // Call the play_song API endpoint
+        const response = await fetch(`/artists/play-song/${songId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            currentSongId = songId;
+            currentPlayId = data.play_id;
+
+            // Create audio element
+            currentAudio = new Audio(data.audio);
+            currentAudio.volume = document.getElementById('volumeSlider').value / 100;
+
+            // Set up audio event listeners
+            currentAudio.addEventListener('loadedmetadata', function() {
+                document.getElementById('duration').textContent = formatTime(currentAudio.duration);
+            });
+
+            currentAudio.addEventListener('timeupdate', function() {
+                updateProgressBar();
+            });
+
+            currentAudio.addEventListener('ended', function() {
+                playNextSong();
+            });
+
+            // Update player UI
+            document.getElementById('playerCover').src = data.cover;
+            document.getElementById('playerTitle').textContent = data.title;
+            document.getElementById('playerArtist').textContent = data.artist;
+            document.getElementById('audioPlayer').classList.add('active');
+
+            // Play the audio
+            await currentAudio.play();
+            isPlaying = true;
+            updatePlayButton();
+
+            // Update play count in UI
+            const playsElement = document.querySelector(`.song-list-item[data-song-id="${songId}"] .song-plays`);
+            if (playsElement) {
+                playsElement.textContent = data.plays.toLocaleString();
+            }
+
+        } else {
+            showSuccessToast(data.error || 'Error playing song');
+        }
+
+    } catch (error) {
+        console.error('Error playing song:', error);
+        showSuccessToast('Error playing song');
+    } finally {
+        // Reset loading state
+        if (playBtn) {
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        }
+    }
+}
+
+// Toggle play/pause
+function togglePlayPause() {
+    if (!currentAudio) return;
+
+    if (isPlaying) {
+        currentAudio.pause();
+        isPlaying = false;
+    } else {
+        currentAudio.play();
+        isPlaying = true;
+    }
+    updatePlayButton();
+}
+
+// Update play button icon
+function updatePlayButton() {
+    const icon = document.getElementById('playPauseIcon');
+    if (isPlaying) {
+        icon.className = 'fas fa-pause';
+    } else {
+        icon.className = 'fas fa-play';
+    }
+}
+
+// Update progress bar
+function updateProgressBar() {
+    if (!currentAudio) return;
+
+    const progress = document.getElementById('progress');
+    const currentTime = document.getElementById('currentTime');
+    
+    const percent = (currentAudio.currentTime / currentAudio.duration) * 100;
+    progress.style.width = percent + '%';
+    currentTime.textContent = formatTime(currentAudio.currentTime);
+}
+
+// Seek audio
+function seekAudio(event) {
+    if (!currentAudio) return;
+
+    const progressBar = event.currentTarget;
+    const clickPosition = event.offsetX;
+    const progressBarWidth = progressBar.offsetWidth;
+    const seekTime = (clickPosition / progressBarWidth) * currentAudio.duration;
+    
+    currentAudio.currentTime = seekTime;
+}
+
+// Set volume
+function setVolume(volume) {
+    if (currentAudio) {
+        currentAudio.volume = volume / 100;
+    }
+}
+
+// Format time (seconds to MM:SS)
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Play next song
+function playNextSong() {
+    if (!songsQueue.length) return;
+
+    const currentIndex = songsQueue.findIndex(song => song.id === currentSongId);
+    const nextIndex = (currentIndex + 1) % songsQueue.length;
+    const nextSong = songsQueue[nextIndex];
+    
+    playSong(nextSong.id);
+}
+
+// Play previous song
+function previousSong() {
+    if (!songsQueue.length) return;
+
+    const currentIndex = songsQueue.findIndex(song => song.id === currentSongId);
+    const prevIndex = (currentIndex - 1 + songsQueue.length) % songsQueue.length;
+    const prevSong = songsQueue[prevIndex];
+    
+    playSong(prevSong.id);
+}
+
+// Update play duration when playback ends
+async function updatePlayDuration(playId, duration) {
+    try {
+        await fetch(`/artists/update-play-duration/${currentSongId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                play_id: playId,
+                duration_played: duration
+            })
+        });
+    } catch (error) {
+        console.error('Error updating play duration:', error);
+    }
+}
+
+// Download song
+async function downloadSong(songId) {
+    try {
+        const response = await fetch(`/artists/download-song/${songId}/`, {
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Create temporary link for download
+            const link = document.createElement('a');
+            link.href = data.download_url;
+            link.download = data.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Update download count in UI
+            const downloadsElement = document.querySelector(`.song-list-item[data-song-id="${songId}"] .song-downloads`);
+            if (downloadsElement) {
+                const currentDownloads = parseInt(downloadsElement.textContent.replace(/,/g, '')) || 0;
+                downloadsElement.textContent = (currentDownloads + 1).toLocaleString();
+            }
+
+            showSuccessToast('Song downloaded successfully!');
+        } else {
+            showSuccessToast(data.error || 'Error downloading song');
+        }
+    } catch (error) {
+        console.error('Error downloading song:', error);
+        showSuccessToast('Error downloading song');
+    }
+}
+
+// Other existing functions
+function editSong(songId) {
+    window.location.href = `/artist/songs/${songId}/edit/`;
+}
+
+function shareSong(songId) {
+    const songUrl = `${window.location.origin}/song/${songId}/`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Check out this song!',
+            url: songUrl
+        });
+    } else {
+        navigator.clipboard.writeText(songUrl).then(() => {
+            showSuccessToast('Song link copied to clipboard!');
+        });
+    }
+}
+
+function shareProfile() {
+    const profileUrl = `${window.location.origin}/artist/{{ artist.id }}/`;
+    if (navigator.share) {
+        navigator.share({
+            title: `Check out {{ artist.name }}'s profile!`,
+            url: profileUrl
+        });
+    } else {
+        navigator.clipboard.writeText(profileUrl).then(() => {
+            showSuccessToast('Profile link copied to clipboard!');
+        });
+    }
+}
+
+// Time Range Filter
+document.getElementById('timeRange').addEventListener('change', function(e) {
+    console.log('Time range changed to:', e.target.value);
+    fetch(`/artist/analytics/data/?range=${e.target.value}`)
+        .then(response => response.json())
+        .then(data => {
+            updateAnalyticsCharts(data);
+        });
+});
+
+// Show success toast
+function showSuccessToast(message) {
+    const toast = document.getElementById('successToast');
+    const messageEl = toast.querySelector('.toast-message');
+    messageEl.textContent = message || 'Operation completed successfully!';
+    toast.style.display = 'flex';
+    
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+// Get CSRF token for AJAX requests
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+// Update analytics charts (placeholder for future implementation)
+function updateAnalyticsCharts(data) {
+    console.log('Updating charts with:', data);
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Artist dashboard loaded');
+    initializeSongsQueue();
+    
+    // Check for URL parameters indicating success
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('upload_success') === 'true') {
+        showSuccessToast('Song uploaded successfully!');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Add hover effects to song list items
+    const songItems = document.querySelectorAll('.song-list-item');
+    songItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(255, 255, 255, 0.08)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - {{ user.username }} | Sangabiz{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Header -->
+    <div class="hero" style="padding: 40px 0; margin-bottom: 30px;">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="user-avatar" style="width: 80px; height: 80px; font-size: 24px;">
+                    {{ user.username|first|upper }}
+                </div>
+                <div>
+                    <h1 style="font-size: 36px; margin-bottom: 8px;">{{ user.username }}</h1>
+                    <p style="color: var(--gray); font-size: 16px;">{{ user.email }}</p>
+                    {% if user.is_artist %}
+                    <span class="artist-badge" style="font-size: 12px; padding: 4px 12px;">VERIFIED ARTIST</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Stats -->
+    <div class="charts-grid" style="margin-bottom: 40px;">
+        <div class="chart-section">
+            <div class="chart-title">
+                <i class="fas fa-user"></i>
+                <span>Profile Information</span>
+            </div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Username:</span>
+                    <span style="color: var(--light);">{{ user.username }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Email:</span>
+                    <span style="color: var(--light);">{{ user.email }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Account Type:</span>
+                    <span style="color: var(--light);">
+                        {% if user.is_artist %}Artist{% else %}Listener{% endif %}
+                    </span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Member Since:</span>
+                    <span style="color: var(--light);">{{ user.date_joined|date:"F j, Y" }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span style="color: var(--gray);">Last Login:</span>
+                    <span style="color: var(--light);">{{ user.last_login|date:"F j, Y g:i A" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">
+                <i class="fas fa-chart-bar"></i>
+                <span>Account Statistics</span>
+            </div>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Liked Songs:</span>
+                    <span style="color: var(--light);">{{ liked_songs_count }} songs</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Playlists:</span>
+                    <span style="color: var(--light);">{{ playlists_count }} playlists</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Following:</span>
+                    <span style="color: var(--light);">{{ following_count }} artists</span>
+                </div>
+                {% if user.is_artist %}
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #282828;">
+                    <span style="color: var(--gray);">Uploads:</span>
+                    <span style="color: var(--light);">{{ uploads_count }} songs</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span style="color: var(--gray);">Total Plays:</span>
+                    <span style="color: var(--light);">{{ total_plays }} plays</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="chart-section">
+        <div class="chart-title">
+            <i class="fas fa-bolt"></i>
+            <span>Quick Actions</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <a href="{% url 'settings' %}" class="quick-action-btn" style="text-decoration: none; text-align: center;">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="{% url 'premium_pricing' %}" class="quick-action-btn" style="text-decoration: none; text-align: center;">
+                <i class="fas fa-crown"></i>
+                <span>Go Premium</span>
+            </a>
+            {% if not user.is_artist %}
+            <a href="{% url 'become_artist' %}" class="quick-action-btn" style="text-decoration: none; text-align: center;">
+                <i class="fas fa-user-plus"></i>
+                <span>Become Artist</span>
+            </a>
+            {% else %}
+            <a href="{% url 'artist_dashboard' %}" class="quick-action-btn" style="text-decoration: none; text-align: center;">
+                <i class="fas fa-chart-line"></i>
+                <span>Artist Dashboard</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'help_center' %}" class="quick-action-btn" style="text-decoration: none; text-align: center;">
+                <i class="fas fa-question-circle"></i>
+                <span>Help Center</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="chart-section" style="margin-top: 30px;">
+        <div class="chart-title">
+            <i class="fas fa-history"></i>
+            <span>Recent Activity</span>
+        </div>
+        <div class="song-list">
+            {% if recent_activity %}
+                {% for activity in recent_activity %}
+                <div class="song-item">
+                    <div class="song-number">{{ forloop.counter }}</div>
+                    <div class="song-info-small">
+                        <div class="song-title">{{ activity.song.title }}</div>
+                        <div class="song-artist">{{ activity.song.artist.name }}</div>
+                    </div>
+                    <div class="song-duration">{{ activity.played_at|timesince }} ago</div>
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-music" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>No recent activity found</p>
+                    <a href="{% url 'discover' %}" class="download-btn" style="margin-top: 16px;">
+                        <i class="fas fa-search"></i>
+                        Discover Music
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Music Charts - Sangabiz{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h1>Music Charts</h1>
+        <p>Discover the most popular songs and trending artists on Sangabiz</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Top Charts Grid -->
+    <section class="charts-section">
+        <h2 class="section-title">Top Charts</h2>
+        
+        <div class="charts-grid">
+            {% for chart in charts %}
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">{{ chart.title }}</h3>
+                    <p class="chart-description">{{ chart.description }}</p>
+                </div>
+                
+                <div class="mdundo-song-list compact">
+                    {% for entry in chart.entries.all|slice:":10" %}
+                    <div class="mdundo-song-item compact" onclick="playSongFromCard({{ entry.song.id }})">
+                        <div class="song-number">{{ entry.position }}</div>
+                        <div class="song-image" style="background-image: url('{% if entry.song.cover_image %}{{ entry.song.cover_image.url }}{% else %}{% static 'images/default-cover.jpg' %}{% endif %}')"></div>
+                        <div class="song-info">
+                            <h4 class="song-title">{{ entry.song.title }}</h4>
+                            <p class="song-artist">{{ entry.song.artist.name }}</p>
+                        </div>
+                        <div class="chart-stats">
+                            {% if chart.chart_type == 'top_songs' or chart.chart_type == 'trending' %}
+                            <span class="plays">{{ entry.song.plays }} plays</span>
+                            {% elif chart.chart_type == 'new_releases' %}
+                            <span class="release-date">{{ entry.song.created_at|date:"M d" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-data">
+                        <i class="fas fa-music"></i>
+                        <p>No songs in this chart yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <a href="{% url 'chart_detail' chart.id %}" class="view-chart-btn">View Full Chart</a>
+            </div>
+            {% empty %}
+            <div class="no-content">
+                <i class="fas fa-chart-bar"></i>
+                <p>No charts available yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Featured Videos Section -->
+    <section class="featured-videos" style="margin-top: 60px;">
+        <h2 class="section-title">Trending Music Videos</h2>
+        <div class="videos-grid">
+            {% for video in featured_videos %}
+            <div class="video-card">
+                <div class="video-thumbnail">
+                    <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}">
+                    <div class="play-overlay" onclick="playYouTubeVideo('{{ video.youtube_id }}')">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">{{ video.title }}</h3>
+                    <p class="video-description">{{ video.description|truncatewords:15 }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-content">
+                <i class="fas fa-video"></i>
+                <p>No featured videos available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
