@@ -22,7 +22,8 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'jazzmin',
     'unfold',
-    
+     'cloudinary',
+    'cloudinary_storage',
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
