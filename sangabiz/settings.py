@@ -20,14 +20,14 @@ VPS_IP = '72.61.200.13'
 VPS_DOMAIN = 'sangabiz.com'
 
 ALLOWED_HOSTS = [
-    VPS_DOMAIN,
-    'www.' + VPS_DOMAIN,
-    VPS_IP,
-    'sangabizug.onrender.com',
-    'sangabizz.onrender.com',
+    'sangabiz.com',
+    'www.sangabiz.com',
+    '127.0.0.1',
     'localhost',
-    '127.0.0.1'
+    '72.61.200.13',  # your VPS IP
+    
 ]
+
 
 # CSRF trusted origins for your domain
 CSRF_TRUSTED_ORIGINS = [
