@@ -10,10 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-p-8cakys+ff2=@ug-r__yilt%sli8bn4%3+hh30+c9$j$=^z*%')
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = [
     'sangabizug.onrender.com',
     'sangabizz.onrender.com',
+    'sangabiz.com',
     'localhost',
     '127.0.0.1'
 ]
