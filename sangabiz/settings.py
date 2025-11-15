@@ -139,16 +139,16 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/var/www/sangabizz/staticfiles/'
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    '/var/www/sangabizz/static/',
 ]
 
-# Media files configuration for VPS
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/var/www/sangabizz/media/'
+
 
 # Cloudinary configuration for media storage (optional)
 CLOUDINARY_STORAGE = {
