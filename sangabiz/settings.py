@@ -39,7 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 INSTALLED_APPS = [
-
+    'jazzmin',
     'unfold',
     'cloudinary',
     'cloudinary_storage',
