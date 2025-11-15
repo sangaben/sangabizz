@@ -140,14 +140,12 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/sangabizz/staticfiles/'
-
-STATICFILES_DIRS = [
-    '/var/www/sangabizz/static/',
-]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/www/sangabizz/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 
 # Cloudinary configuration for media storage (optional)
